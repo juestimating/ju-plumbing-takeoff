@@ -1,0 +1,370 @@
+/*
+ * Price and turnaround on a content page: the home drivers panel beside a price card, then the price ladder. The ladder
+ * is a navy pipe with a fitting at every stop: a row of five cards from 1024px, two rows (three and two) from 640px, a
+ * riser down the left edge on phones, and the monthly plan on a tee (a square fitting). The current stop gets an amber fitting and ring. Arrow circles are CSS
+ * masks, the pipe and fittings are pseudo-elements (decorative).
+ */
+
+/* ---------- what moves the price + price card ---------- */
+.row {
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+    align-items: start;
+    gap: 24px;
+  }
+}
+
+.drivers {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 16px 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+}
+.text {
+  display: grid;
+  gap: 12px;
+  padding-top: 8px;
+}
+.text p {
+  margin: 0;
+  max-width: 72ch;
+}
+.text strong {
+  color: var(--color-navy);
+}
+.text a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+@media (max-width: 559px) {
+  .drivers {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px 16px;
+  }
+  .text {
+    padding-top: 0;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 26px 22px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  box-shadow: var(--shadow-pop);
+}
+.label {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.amount {
+  margin: 8px 0 0;
+  font: 800 clamp(2rem, 1.2rem + 1.6vw, 2.6rem) / 1.08 var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-navy);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-mut);
+}
+.cta {
+  margin-top: 22px;
+}
+.quote {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--color-mut);
+}
+
+/* ---------- price ladder ---------- */
+.ladder {
+  margin-top: clamp(36px, 4vw, 56px);
+}
+.ladderLabel {
+  margin: 0 0 18px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.stops {
+  --gap: 12px;
+  --fit: 26px;
+  display: grid;
+  gap: var(--gap);
+  margin: 0;
+  padding: 0 0 0 42px;
+  list-style: none;
+}
+.stop {
+  position: relative;
+  display: flex;
+}
+.stopCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 64px 16px 18px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(21 18 58 / 0.04);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.stopCard:hover,
+.stopCard:focus-within {
+  transform: translateY(-3px);
+  border-color: #d5dbea;
+  box-shadow: var(--shadow-card);
+}
+.stop[data-on] .stopCard {
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 1px var(--color-amber);
+}
+.stop[data-on] .stopCard:hover,
+.stop[data-on] .stopCard:focus-within {
+  border-color: var(--color-amber);
+  box-shadow:
+    0 0 0 1px var(--color-amber),
+    var(--shadow-card);
+}
+
+/* the fitting at each stop (riser: left of the card; row: above it) */
+.stop::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 22px;
+  left: calc(-42px + 6px);
+  width: var(--fit);
+  height: var(--fit);
+  box-sizing: border-box;
+  border: 5px solid var(--color-navy);
+  border-radius: 50%;
+  background: #fff;
+}
+.stop[data-on]::before {
+  background: var(--color-amber);
+}
+.stop[data-branch]::before {
+  border-radius: 7px;
+}
+/* the pipe: each stop runs a 10px segment to the next stop's fitting */
+.stop:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: calc(22px + var(--fit) / 2);
+  left: calc(-42px + 6px + var(--fit) / 2 - 5px);
+  width: 10px;
+  height: calc(100% + var(--gap));
+  background: var(--color-navy);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  color: var(--color-navy);
+  text-decoration: none;
+}
+/* The whole card is the link: the name's ::after covers the card, so the focus ring traces it. */
+.name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: var(--r-card, 20px);
+}
+.name:focus-visible {
+  outline: none;
+}
+.name:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.stopCard:hover .name {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.here {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--color-navy);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+}
+.best {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--color-mut);
+}
+.go {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  color: var(--color-navy);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.go::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+.stopCard:hover .go,
+.stopCard:focus-within .go {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+.all {
+  margin-top: 22px;
+}
+
+/* rows of cards on the pipe from 640px: the fittings above the cards, the arrow circle at the card's foot */
+@media (min-width: 640px) {
+  .stops {
+    padding: 40px 0 0;
+  }
+  .stopCard {
+    padding: 18px 18px 20px;
+  }
+  .stop::before {
+    top: -40px;
+    left: 16px;
+  }
+  .best {
+    margin-bottom: 4px;
+  }
+  .go {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex: none;
+    align-self: flex-end;
+    margin-top: auto;
+  }
+}
+/*
+ * 640 to 1023px: two rows, three stops then two (six tracks, so the second row fills the width). Each stop draws the
+ * pipe back to the previous fitting in its row; the first stop draws a return bend down the left edge into the second
+ * row's first fitting.
+ */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .stops {
+    --row-gap: 52px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: var(--row-gap);
+    padding-left: 30px;
+  }
+  .stop {
+    grid-column: span 2;
+  }
+  .stop:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+  .stops .stop::after {
+    content: "";
+    position: absolute;
+    top: calc(-40px + var(--fit) / 2 - 5px);
+    left: calc(16px + var(--fit) / 2 - 100% - var(--gap));
+    width: calc(100% + var(--gap));
+    height: 10px;
+    background: var(--color-navy);
+  }
+  .stops .stop:first-child::after {
+    left: -26px;
+    width: calc(26px + 16px + var(--fit) / 2);
+    height: calc(100% + var(--row-gap) + 10px);
+    box-sizing: border-box;
+    border: 10px solid var(--color-navy);
+    border-right: 0;
+    border-radius: 18px 0 0 18px;
+    background: none;
+  }
+  .stops .stop:nth-child(4)::after {
+    content: none;
+  }
+}
+/* one row of five cards on the pipe */
+@media (min-width: 1024px) {
+  .stops {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .stop:not(:last-child)::after {
+    top: calc(-40px + var(--fit) / 2 - 5px);
+    left: calc(16px + var(--fit) / 2);
+    width: calc(100% + var(--gap));
+    height: 10px;
+  }
+}
+
+@media (forced-colors: active) {
+  .stop[data-on] .stopCard {
+    outline: 2px solid Highlight;
+  }
+  .go::before {
+    background: CanvasText;
+  }
+}

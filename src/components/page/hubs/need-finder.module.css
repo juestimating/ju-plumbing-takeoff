@@ -1,0 +1,181 @@
+/*
+ * /services #overview, the need finder: HoverTabs (a list at every width) whose panels open on the bid line, four
+ * stops on a navy pipe with the covered ones lit amber. Global pieces: .hr-badge, .hr-checks, .arrow-link, .btn.
+ */
+
+/* ---------- need finder ---------- */
+.finder {
+  --ht-list: clamp(320px, 28vw, 400px);
+}
+/* Every panel is as tall as the tallest (HoverTabs stacks them): a shorter one keeps its spare height as air above
+   the buttons, so the buttons sit on the same line in every panel. */
+.needPanel {
+  display: flex;
+  flex-direction: column;
+}
+.need {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* the bid line: four stops on a navy pipe, the stops this service covers lit amber */
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-mut) 30%, transparent);
+}
+.track {
+  position: relative;
+  flex: 1 1 280px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 560px;
+}
+/* the pipe runs from the first stop's center to the last one's */
+.track::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 12.5%;
+  left: 12.5%;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--color-navy);
+}
+.stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--color-mut);
+}
+.fit {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--color-navy);
+  border-radius: 50%;
+  background: #fff;
+}
+.stop[data-on] {
+  font-weight: 800;
+  color: var(--color-navy);
+}
+.stop[data-on] .fit {
+  background: var(--color-amber);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-amber) 30%, transparent);
+}
+.repeat {
+  flex: none;
+  padding: 4px 11px;
+  border: 1.5px dashed var(--color-amber);
+  border-radius: 999px;
+  background: var(--color-tint);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--color-amber-ink);
+}
+@media (forced-colors: active) {
+  .stop[data-on] .fit {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+  }
+}
+
+.answer {
+  margin: 0;
+  font: 700 clamp(1.15rem, 1rem + 0.6vw, 1.3rem) / 1.35 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.leadIn {
+  color: var(--color-amber-ink);
+}
+.answer a {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.delivery {
+  margin: -4px 0 0;
+}
+.checks {
+  font-size: 0.97rem;
+}
+.extras {
+  margin: 0;
+}
+.extrasLabel {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.typeChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.typeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 16px 6px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.typeChip svg {
+  color: var(--color-amber-ink);
+}
+.typeChip:hover {
+  border-color: var(--color-amber);
+  box-shadow: var(--shadow-card);
+}
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.ctas > * {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+/* the panels are a container (HoverTabs): checks go three across where the panel is wide */
+@container (min-width: 720px) {
+  .checks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+}
+@container (max-width: 479px) {
+  .ctas > * {
+    flex: 1 1 100%;
+  }
+}

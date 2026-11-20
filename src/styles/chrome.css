@@ -1,0 +1,604 @@
+@layer components {
+  .container-ju {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .skip {
+    position: absolute;
+    left: 12px;
+    top: -60px;
+    z-index: 100;
+    background: var(--color-amber);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    transition: top 0.15s;
+  }
+  .skip:focus {
+    top: 12px;
+  }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.7rem 1.35rem;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      border-color 0.15s,
+      transform 0.15s,
+      box-shadow 0.15s;
+  }
+  /* A long label wraps on a phone instead of pushing the page wider than the screen. */
+  @media (max-width: 520px) {
+    .btn {
+      max-width: 100%;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:active {
+    transform: none;
+  }
+  .btn-lg {
+    min-height: 52px;
+    padding: 0.9rem 1.75rem;
+    font-size: 1.05rem;
+  }
+  .btn-sm {
+    min-height: 38px;
+    padding: 0.45rem 1rem;
+    font-size: 0.92rem;
+  }
+  .btn-pill {
+    border-radius: 999px;
+  }
+  .btn-block {
+    width: 100%;
+  }
+  .btn-primary {
+    background: var(--color-amber);
+    color: var(--color-on-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-amber-hi);
+    box-shadow: 0 6px 18px rgb(245 180 0 / 0.35);
+  }
+  .btn-navy {
+    background: var(--color-navy);
+    color: #fff;
+  }
+  .btn-navy:hover {
+    background: var(--color-navy-2);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--color-navy);
+    border-color: var(--color-navy);
+  }
+  .btn-outline:hover {
+    background: rgb(31 27 80 / 0.06);
+  }
+  .tone-dark .btn-outline,
+  .pg-hero .btn-outline,
+  .cta-band .btn-outline {
+    color: #fff;
+    border-color: rgb(255 255 255 / 0.5);
+  }
+  .tone-dark .btn-outline:hover,
+  .pg-hero .btn-outline:hover,
+  .cta-band .btn-outline:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+  .arrow-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .tone-dark .arrow-link {
+    color: #fff;
+  }
+
+  /* ---------- header ---------- */
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: #fff;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .hdr-in {
+    display: flex;
+    align-items: center;
+    gap: var(--s4);
+    min-height: var(--header-h);
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+  .logo img {
+    height: 44px;
+    width: auto;
+  }
+  .logo-sep {
+    width: 1px;
+    height: 32px;
+    background: var(--color-line);
+  }
+  .logo-word {
+    display: grid;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.12rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .logo-word small {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-mut);
+  }
+  .hdr-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hdr-phone {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+  .hdr-phone:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .hdr-cta {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .hdr-cta {
+      display: inline-flex;
+    }
+  }
+  /* The phone joins the row once there is room for it next to the full nav pill (the row needs about 1,250px). */
+  @media (min-width: 1280px) {
+    .hdr-phone {
+      display: inline-flex;
+    }
+  }
+
+  /* Desktop nav: the links sit in one soft pill, as on the JU Estimating header. The pill itself is not positioned,
+     so the mega panels keep spanning the full header. */
+  .nav {
+    display: none;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  @media (min-width: 1024px) {
+    .nav {
+      display: flex;
+      margin-inline: auto;
+      padding: 5px;
+      border-radius: 999px;
+      background: var(--color-alt);
+    }
+    .hdr-actions {
+      margin-left: 0;
+    }
+  }
+  .nav-link,
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 42px;
+    padding-inline: 15px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.98rem;
+    white-space: nowrap;
+    color: var(--color-ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      box-shadow 0.15s,
+      color 0.15s;
+  }
+  .nav-link:hover,
+  .nav-btn:hover,
+  .nav-btn[aria-expanded="true"],
+  .nav-link[aria-current="page"] {
+    background: #fff;
+    box-shadow: 0 1px 3px rgb(21 18 58 / 0.1);
+    color: var(--color-navy);
+  }
+  .nav-link[aria-current="page"] {
+    box-shadow:
+      inset 0 -2px 0 var(--color-amber),
+      0 1px 3px rgb(21 18 58 / 0.1);
+  }
+  .nav-btn svg {
+    transition: transform 0.15s;
+  }
+  .nav-btn[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+  /* Narrow desktops (1024 to 1279px): six links, the logo and the quote button share about 990 to 1,240px, so the pill tightens. */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .hdr-in {
+      gap: 12px;
+    }
+    .nav-link,
+    .nav-btn {
+      padding-inline: 9px;
+      font-size: 0.94rem;
+    }
+  }
+
+  .mega {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: #fff;
+    border-bottom: 1px solid var(--color-line);
+    box-shadow: var(--shadow-pop);
+    padding-block: 28px 32px;
+  }
+  .mega[hidden] {
+    display: none;
+  }
+  .mega-inner {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  }
+  .mega-list {
+    display: grid;
+    gap: 2px 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+  }
+  .mega-link {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    text-decoration: none;
+  }
+  .mega-link:hover {
+    background: var(--color-alt);
+  }
+  .mega-ico {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--c, var(--color-amber-ink));
+    background: color-mix(in srgb, var(--c, var(--color-amber-ink)) 13%, white);
+  }
+  .mega-t {
+    display: block;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-navy);
+  }
+  .mega-d {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.86rem;
+    line-height: 1.4;
+    color: var(--color-mut);
+  }
+  .mega-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    border-radius: var(--radius-card);
+    background: var(--color-navy);
+    color: var(--color-onnavy);
+  }
+  .mega-feature p {
+    margin: 0;
+  }
+  .mega-feature .mega-price {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1;
+    text-wrap: balance;
+    color: #fff;
+  }
+  /* The quote kicker is 54 characters and wraps to about three lines in this narrow box: keep its rule on the first line. */
+  .mega-feature .kicker {
+    align-items: flex-start;
+  }
+  .mega-feature .kicker::before {
+    flex: none;
+    margin-top: calc(0.825em - 1px);
+  }
+  .mega-all {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    padding: 12px;
+  }
+
+  /* ---------- mobile nav ---------- */
+  .hamburger {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--color-navy);
+    cursor: pointer;
+  }
+  @media (min-width: 1024px) {
+    .hamburger {
+      display: none;
+    }
+  }
+  .mnav {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .mnav:not([open]) {
+    display: none;
+  }
+  .mnav::backdrop {
+    background: rgb(21 18 58 / 0.5);
+  }
+  .mnav-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+    padding-inline: var(--gutter);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .mnav-body {
+    height: calc(100dvh - var(--header-h));
+    overflow-y: auto;
+    padding: 8px var(--gutter) 40px;
+  }
+  .mnav details {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .mnav summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-navy);
+    list-style: none;
+    cursor: pointer;
+  }
+  .mnav summary::-webkit-details-marker {
+    display: none;
+  }
+  .mnav details[open] summary svg {
+    transform: rotate(180deg);
+  }
+  .mnav .mlink {
+    display: block;
+    padding: 11px 0;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .mnav .mlink-top {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-navy);
+  }
+  .mnav-cta {
+    display: grid;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  /* ---------- sticky mobile call/quote bar ---------- */
+  .sticky-cta {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    display: flex;
+    gap: 10px;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid var(--color-line);
+    box-shadow: 0 -8px 24px rgb(21 18 58 / 0.1);
+    transition: transform 0.2s ease;
+  }
+  .sticky-cta .btn {
+    flex: 1;
+    white-space: nowrap;
+  }
+  /* The call button only needs room for its icon and one word; the quote button takes the rest. */
+  .sticky-cta .btn:first-child {
+    flex: 0 0 auto;
+  }
+  /* Steps aside while the page's own quote form is on screen (StickyCta sets data-hidden). visibility keeps it out of the tab order and the accessibility tree. */
+  .sticky-cta[data-hidden] {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s ease,
+      visibility 0s 0.2s;
+  }
+  @media (min-width: 1024px) {
+    .sticky-cta {
+      display: none;
+    }
+  }
+  /* the quote form page has its own submit button */
+  body:has(#quote-form) .sticky-cta,
+  body:has(#next-10-minutes) .sticky-cta {
+    display: none;
+  }
+
+  /* ---------- footer ---------- */
+  .ft {
+    background: var(--color-navy-d);
+    color: var(--color-onnavy);
+    padding-top: var(--s7);
+  }
+  .ft a {
+    color: var(--color-onnavy);
+    text-decoration: none;
+  }
+  .ft a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .ft-grid {
+    display: grid;
+    gap: 40px 32px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 900px) {
+    .ft-grid {
+      grid-template-columns: 1.5fr 1fr 1fr 1.3fr;
+    }
+  }
+  /* below 900px the brand and the offices take full rows, services and company share the one between */
+  .ft-brand,
+  .ft-offices {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .ft-brand,
+    .ft-offices {
+      grid-column: auto;
+    }
+  }
+  .ft-title {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+  }
+  .ft ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ft address {
+    font-style: normal;
+    line-height: 1.6;
+  }
+  .ft-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 24px;
+    margin-top: 48px;
+    padding-block: 22px;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    font-size: 0.9rem;
+    color: var(--color-onnavy-mut);
+  }
+  .ft-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  /* Phones: links get a full-size touch target (44px) without changing how the text looks. */
+  @media (max-width: 1023px) {
+    .ft ul {
+      gap: 0;
+    }
+    .ft ul a,
+    .ft address a,
+    .ft-legal a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    .ft-brand p a[href^="tel:"],
+    .ft-brand p a[href^="mailto:"] {
+      min-height: 44px;
+    }
+    .ft-legal {
+      gap: 0 20px;
+    }
+    .btn-sm,
+    .arrow-link,
+    .cta-contact a:not(.btn),
+    .chip {
+      min-height: 44px;
+    }
+  }
+}

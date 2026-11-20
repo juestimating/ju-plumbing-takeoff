@@ -1,0 +1,242 @@
+/*
+ * TablePick: guide tables the visitor reads row by row. The frames keep their global look (prose.css .g-tbl, .g-num,
+ * .g-legend, .tbl-sheet; sections.css .sheet); this module adds the readout and the picked states. A pick changes
+ * colors only, never a size, and no text is dimmed: the faded states are lines and backgrounds.
+ */
+
+/* ---------- readout above the table (num, legend, reference): white, with the picked row's amber bar ---------- */
+.bar {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px 13px 20px;
+  border-bottom: 1px solid #d5dbea;
+  background: #fff;
+  box-shadow: inset 4px 0 0 var(--color-amber);
+}
+.hint {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+/* every row's readout sits in one grid cell; only the picked one is visible, so the bar keeps one height */
+.readout {
+  display: grid;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+.readout > span {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.readout > span[data-on] {
+  visibility: visible;
+}
+.lead {
+  display: block;
+  margin-bottom: 2px;
+}
+.pos {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--color-tint);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-amber-ink);
+}
+.title {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+/* a label and its value wrap as one unit (a long value wraps inside its own box) */
+.pair {
+  display: inline-block;
+  max-width: 100%;
+  margin-right: 14px;
+  vertical-align: top;
+}
+.pair:last-child {
+  margin-right: 0;
+}
+.k {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+/* legend: the label as a plan draws it, a run in the system color broken by the label */
+.run {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: var(--c-ink, var(--color-navy));
+}
+.run i {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c, var(--color-navy));
+  forced-color-adjust: none;
+}
+.run[data-dash] i {
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg, var(--c, var(--color-navy)) 0 8px, transparent 8px 13px);
+}
+
+/* ---------- rows ---------- */
+.frame tbody tr,
+.sheet tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.frame tbody tr[data-on] {
+  background: var(--color-tint);
+}
+.frame tbody tr[data-on] > td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-amber);
+}
+.pick {
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+.pick:focus-visible {
+  outline-offset: 4px;
+}
+/* phone sheet cells have 6px padding: a smaller offset keeps the ring inside the scrolling frame */
+.sheet .pick:focus-visible {
+  outline-offset: 2px;
+}
+
+/* num: the picked number turns amber and the route line fills down to it */
+.frame[data-pick="num"] tr[data-on] :global(.n) {
+  background: var(--color-amber);
+  box-shadow: 0 0 0 4px var(--color-tint);
+  color: var(--color-navy);
+}
+@media (min-width: 640px) {
+  .frame[data-pick="num"] tr[data-done] > td:first-child,
+  .frame[data-pick="num"] tr[data-on]:last-child > td:first-child {
+    background-image: linear-gradient(var(--color-amber-ink), var(--color-amber-ink));
+  }
+  .frame[data-pick="num"] tr[data-on]:not(:first-child, :last-child) > td:first-child {
+    background-image: linear-gradient(var(--color-amber-ink) 50%, var(--color-line) 50%);
+  }
+}
+
+/* legend: the other rows' lines fade (lines only, the text keeps its color) */
+.frame[data-pick="legend"] tbody tr:not([data-on]) td[data-c]::before {
+  opacity: 0.35;
+}
+
+/* ---------- sheet: a formula bar with the row's range, the picked row outlined like a selection ---------- */
+.hintBar {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.fbar {
+  display: grid;
+  grid-template-columns: 72px 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #c8d0e0;
+  background: #fff;
+}
+.name {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  background: #f5f7fb;
+  font: 600 0.82rem/1 ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+  color: var(--color-navy);
+}
+.fx {
+  font-style: italic;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-mut);
+}
+.fbar .readout {
+  min-height: 34px;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.fbar .lead {
+  display: inline;
+  margin: 0 14px 0 0;
+}
+.sheet tbody tr[data-on] {
+  outline: 2px solid var(--color-amber);
+  outline-offset: -2px;
+}
+.sheet tbody tr[data-on] > td {
+  background: var(--color-tint);
+}
+.sheet tbody tr[data-on] > td:first-child {
+  box-shadow:
+    inset 4px 0 0 var(--color-amber),
+    1px 0 0 #e1e6f0;
+}
+
+/* ---------- phones: stacked cards ---------- */
+@media (max-width: 639px) {
+  /* a route step, a line label and a reference row already read as a labeled card (the picked one stays tinted): the
+     readout keeps only the name, so it stays short and near the cards */
+  .frame:is([data-pick="num"], [data-pick="legend"], [data-pick="ref"]) .pair {
+    display: none;
+  }
+  .frame tbody tr[data-on] > td:first-child {
+    box-shadow: none;
+  }
+  .frame tbody tr[data-on] {
+    box-shadow: inset 4px 0 0 var(--color-amber);
+  }
+  .fbar {
+    grid-template-columns: 58px 12px minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .name {
+    font-size: 0.74rem;
+  }
+  .fbar .readout {
+    font-size: 0.85rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .frame tbody tr[data-on],
+  .sheet tbody tr[data-on] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .bar {
+    border-left: 4px solid Highlight;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frame tbody tr,
+  .sheet tbody tr {
+    transition: none;
+  }
+}

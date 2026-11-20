@@ -1,0 +1,34 @@
+/*
+ * Masked icons for marks the hubs repeat in every stacked panel (R-HUB-08): the lucide clock and arrow-right drawn as
+ * a CSS mask, so the HTML carries no SVG per copy. They paint in currentColor (CanvasText and LinkText in forced
+ * colors). Use as <span className={ic.clock} aria-hidden="true" />; the arrow sits in links.
+ */
+.clock,
+.arrow {
+  display: inline-block;
+  flex: none;
+  background: currentColor;
+}
+.clock {
+  width: 15px;
+  height: 15px;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") center / contain no-repeat;
+}
+.arrow {
+  width: 16px;
+  height: 16px;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+/* a mask paints with the background, which forced colors would drop or leave in the page's own color */
+@media (forced-colors: active) {
+  .clock,
+  .arrow {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  .arrow {
+    background: LinkText;
+  }
+}

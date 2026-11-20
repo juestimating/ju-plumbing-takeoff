@@ -1,0 +1,609 @@
+/*
+ * /samples: the sample workbook (dark section, a white workbook window with file tabs, the sheet with its workbook
+ * tabs, its source sheets and a readout). The window sits on a .tone-dark section, so the dark section's heading,
+ * link and focus colors are reset inside it. The request slip is in slip.module.css.
+ */
+
+/* ---------- section: the home demo's faint drafting grid, fading toward the edges ---------- */
+.sec {
+  position: relative;
+  isolation: isolate;
+}
+.sec::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ---------- window ---------- */
+/* clip, not hidden: a hidden window would be a scroll container and hold the sticky readout (below 1024) in place */
+.window {
+  overflow: clip;
+  border-radius: var(--r-panel);
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow:
+    0 30px 70px -30px rgb(0 0 0 / 0.6),
+    0 0 0 1px rgb(255 255 255 / 0.08);
+}
+.window :focus-visible {
+  outline-color: var(--color-navy-2);
+}
+.window a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 3px;
+}
+.winBar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 10px 14px 0;
+  border-bottom: 1px solid #c8d0e0;
+  background: #e6eaf2;
+}
+.dots {
+  flex: none;
+  align-self: center;
+  margin-top: 10px;
+}
+.files {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: -1px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.files::-webkit-scrollbar {
+  display: none;
+}
+.file {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  font: 700 0.84rem/1.2 var(--font-sans);
+  white-space: nowrap;
+  color: var(--color-mut);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.file svg {
+  color: #1f7a4d;
+}
+.ext {
+  margin-left: -6px;
+  font-weight: 600;
+  color: var(--color-mut);
+}
+@media (hover: hover) {
+  .file:not([aria-selected="true"]):hover {
+    background: rgb(255 255 255 / 0.55);
+    color: var(--color-navy);
+  }
+}
+.file[aria-selected="true"] {
+  border-color: #c8d0e0;
+  background: #fff;
+  box-shadow: inset 0 3px var(--color-amber-ink);
+  color: var(--color-navy);
+}
+/* inset ring: the tab strip scrolls sideways and would clip an outer one */
+.file:focus-visible {
+  outline-offset: -4px;
+}
+@media (max-width: 479px) {
+  .winBar {
+    padding-inline: 8px;
+    gap: 8px;
+  }
+  .dots {
+    display: none;
+  }
+  .file {
+    padding: 0 12px;
+  }
+  .ext {
+    display: none;
+  }
+}
+
+/* ---------- panels: stacked in one grid cell, so a file switch never changes the window's height ---------- */
+.panels {
+  display: grid;
+}
+.panel {
+  --pad: clamp(16px, 2.4vw, 32px);
+  --read-h: calc(2 * 1.425rem + 26px); /* the readout's height (see "readout" below) */
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "head" "rail" "sheet" "read" "note";
+  align-content: start;
+  gap: 18px 32px;
+  min-width: 0;
+  padding: var(--pad);
+}
+.panel[inert] {
+  visibility: hidden;
+}
+.panel:focus-visible {
+  outline-offset: -4px;
+}
+@media (min-width: 1280px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    grid-template-areas: "head rail" "sheet rail" "read read" "note note";
+  }
+}
+.head {
+  grid-area: head;
+}
+.h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.4rem, 2.1vw, 1.8rem);
+  color: var(--color-navy);
+}
+.intro {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--color-mut);
+}
+.note {
+  grid-area: note;
+  font-size: 0.9rem;
+  color: var(--color-mut);
+}
+
+/* ---------- rail: the plan sheets a line came from, or the order math ---------- */
+.rail {
+  grid-area: rail;
+  align-self: start;
+  min-width: 0;
+}
+.railLabel {
+  margin: 0 0 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+/* Below 1280 (rail above the sheet): every sheet in view as a wrapping grid of compact chips, three across on phones,
+   so whatever a line lights is on screen with the rail, with no sideways scroller. Beside the sheet: two columns. */
+.sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 1280px) {
+  .sources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+/* a mini plan sheet with its title block */
+.src {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 1px;
+  min-width: 0;
+  padding: 7px 8px 13px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(21 18 58 / 0.06);
+  line-height: 1.25;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.src::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  width: 14px;
+  height: 5px;
+  border: 1px solid #c8d0e0;
+  border-radius: 1px;
+}
+/* "Specification" fits the 103px chips at 390 at this size; hyphens catch a chip near the 100px floor or a wider
+   fallback font, so a long name never spills out of its sheet */
+.src b {
+  font: 800 0.8rem/1.25 var(--font-display);
+  color: var(--color-navy);
+  hyphens: auto;
+}
+.src small {
+  font-size: 0.7rem;
+  color: var(--color-mut);
+}
+@media (min-width: 1280px) {
+  .src {
+    min-height: 60px;
+    padding: 9px 11px 18px;
+  }
+  .src::after {
+    bottom: 6px;
+    width: 18px;
+    height: 7px;
+  }
+  .src b {
+    font-size: 0.9rem;
+  }
+  .src small {
+    font-size: 0.74rem;
+  }
+}
+.src[data-lit] {
+  border-color: var(--color-amber);
+  background: var(--color-tint);
+  box-shadow:
+    0 0 0 1px var(--color-amber),
+    0 8px 18px rgb(138 90 0 / 0.16);
+  transform: translateY(-2px);
+}
+/* the sheets a line did not come from step back: paper, border and shadow fade, the text keeps its contrast */
+.src[data-dim] {
+  border-color: var(--color-line);
+  background: #f7f9fc;
+  box-shadow: none;
+}
+.src[data-dim] b {
+  color: var(--color-mut);
+}
+.src[data-dim]::after {
+  border-color: var(--color-line);
+}
+.math {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 6px;
+}
+.box {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 8px 10px;
+  border: 1px solid #c8d0e0;
+  border-radius: 8px;
+  background: #fff;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+.box small {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-mut);
+}
+.box b {
+  min-height: 1.3em;
+  font: 800 0.95rem/1.3 var(--font-display);
+  color: var(--color-navy);
+}
+.box[data-k="buy"] {
+  grid-column: 1 / -1;
+}
+.math[data-on] .box {
+  border-color: var(--color-amber);
+  background: #fffbeb;
+}
+.op {
+  font: 800 1.1rem/1 var(--font-display);
+  color: var(--color-mut);
+}
+@media (min-width: 640px) and (max-width: 1279px) {
+  .math {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1.6fr);
+  }
+  .box[data-k="buy"] {
+    grid-column: auto;
+    margin-left: 10px;
+  }
+}
+
+/* ---------- the sheet and its lines ---------- */
+/* Below 1024 the sheet and the readout share one box, the sticky readout's containing block, so it rides over the
+   table and nothing else. From 1024 the box steps aside and both take their own grid areas. */
+.lane {
+  grid-row: sheet-start / read-end;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .lane {
+    display: contents;
+  }
+}
+.sheet {
+  grid-area: sheet;
+  min-width: 0;
+  box-shadow: none;
+}
+.sheetBar {
+  padding-block: 8px;
+}
+.table td,
+.table th {
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.lineCell {
+  position: relative;
+}
+.line {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-navy);
+  text-align: left;
+  cursor: pointer;
+}
+/* the whole cell is the tap target */
+.line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.line:hover {
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 3px;
+}
+.line:focus-visible {
+  outline-offset: 2px;
+}
+/* domestic water: a cold run over a hot one (the kit swatch has no "water") */
+/* a line with no system keeps the swatch's slot, so its label lines up with the others */
+.blank {
+  visibility: hidden;
+}
+.line [data-c="water"] {
+  background-image: linear-gradient(var(--color-cold), var(--color-cold)), linear-gradient(var(--color-hot), var(--color-hot));
+  background-position:
+    5px 4px,
+    5px 8px;
+  background-size: 12px 2px;
+}
+.table tr[data-on] td {
+  background: #fff6d9;
+}
+.table tr[data-on] td:first-child {
+  background: var(--color-tint);
+  box-shadow: inset 4px 0 var(--color-amber);
+  font-weight: 800;
+  color: var(--color-amber-ink);
+}
+.nw {
+  white-space: nowrap;
+}
+/* the column that moves under the line's name on phones */
+.lineSub {
+  display: none;
+}
+@media (max-width: 719px) {
+  /* the row-number column is hidden on phones (global .sheet), so the bar moves to the line */
+  .table tr[data-on] td:nth-child(2) {
+    box-shadow: inset 4px 0 var(--color-amber);
+  }
+  .line {
+    align-items: flex-start;
+  }
+  .line :global(.swatch) {
+    margin-top: 2px;
+  }
+}
+@media (max-width: 639px) {
+  .subCol {
+    display: none;
+  }
+  .lineSub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--color-mut);
+  }
+  /* under the name, past the swatch */
+  .lineCell:has(:global(.swatch)) .lineSub {
+    padding-left: 31px;
+  }
+}
+
+/* ---------- workbook tabs: views of the same lines, so only tints and fades change (no weight, no size) ---------- */
+.tabs {
+  padding: 0 10px;
+}
+.tab {
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0 0 8px 8px;
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--color-mut);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .tab:not([aria-selected="true"]):hover {
+    color: var(--color-navy);
+  }
+}
+/* inset ring: the strip scrolls sideways on phones and would clip an outer one */
+.tab:focus-visible {
+  border-radius: 8px;
+  outline-offset: -3px;
+}
+/* amber ink, not amber: the bar is the selected cue and needs 3:1 on white */
+.tab[aria-selected="true"] {
+  background: #fff;
+  box-shadow: inset 0 -3px 0 var(--color-amber-ink);
+  color: var(--color-navy);
+}
+@media (max-width: 1023px) {
+  .tab {
+    min-height: 44px;
+    scroll-margin-bottom: var(--read-h); /* a tab that keyboard focus scrolls to stops above the sticky readout */
+  }
+}
+/* a tab's columns: tinted, the header underlined */
+.table [data-focus] {
+  background: color-mix(in srgb, var(--color-amber) 11%, #fff);
+}
+.table th[data-focus] {
+  box-shadow: inset 0 -3px 0 var(--color-amber-ink);
+}
+/* the lines outside a tab step back without dropping below 4.5:1 (muted ink on a grey wash); the picked line stays lit */
+.table tr[data-off]:not([data-on]) td {
+  border-color: #eef1f6;
+  background: #f7f8fb;
+  color: var(--color-mut);
+}
+.table tr[data-off]:not([data-on]) .line {
+  color: var(--color-mut);
+}
+
+/* ---------- readout: reserves the longest answer's lines, so nothing below moves ---------- */
+.readout {
+  grid-area: read;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--read-h);
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid #c8d0e0;
+  border-radius: var(--r-inner);
+  background: #f7f9fc;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+/* Below 1024 no pick scrolls the page: the readout sticks to the bottom of the screen while the table is on screen,
+   8px above the call/quote bar (67px, plus the phone's home-bar inset), and settles in place below the table. A line
+   that keyboard focus scrolls to stops above it (base.css's 96px scroll-padding-bottom covers the bar). */
+@media (max-width: 1023px) {
+  .readout {
+    position: sticky;
+    bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+    z-index: 1;
+    box-shadow: 0 -10px 22px -12px rgb(21 18 58 / 0.35);
+  }
+  .line {
+    scroll-margin-bottom: var(--read-h);
+  }
+}
+.readout svg {
+  flex: none;
+  color: var(--color-amber-ink);
+}
+.readout strong {
+  color: var(--color-navy);
+}
+.sep {
+  color: #9aa3bd;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .say {
+    animation: say 0.3s ease both;
+  }
+}
+@keyframes say {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+/* the readout's height: the lines the longest answer takes (the estimate's, with its source sheets), measured from 320
+   to 1920; 1.425rem is one line (1.5 at 0.95rem) */
+@media (max-width: 719px) {
+  .panel {
+    --read-h: calc(3 * 1.425rem + 26px);
+  }
+}
+@media (max-width: 479px) {
+  .panel {
+    --read-h: calc(4 * 1.425rem + 26px);
+  }
+}
+@media (max-width: 419px) {
+  .panel {
+    --read-h: calc(5 * 1.425rem + 26px);
+  }
+}
+@media (max-width: 359px) {
+  .panel {
+    --read-h: calc(6 * 1.425rem + 26px);
+  }
+}
+
+/* Windows high contrast drops the tints: the picked line and the lit sheets get the selection colors */
+@media (forced-colors: active) {
+  .table tr[data-on] .line {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .src[data-lit] {
+    outline: 2px solid Highlight;
+  }
+  /* a tab's columns get the selection ring, and the lines outside it the system's dimmed text */
+  .table [data-focus] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .table tr[data-off]:not([data-on]) :is(td, .line) {
+    color: GrayText;
+  }
+  .file[aria-selected="true"] {
+    outline: 2px solid HighlightText;
+    outline-offset: -5px;
+  }
+  /* the picked tab is drawn in Highlight with forced-color-adjust: none (home.css), so its icon and ".xlsx" would keep
+     their own green and grey on it: they follow the tab's text instead */
+  .file[aria-selected="true"] :is(svg, .ext) {
+    color: HighlightText;
+  }
+}

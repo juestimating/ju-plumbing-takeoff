@@ -1,0 +1,118 @@
+export const meta = {
+  slug: "plumbing-estimating-spreadsheet",
+  title: "Plumbing estimating spreadsheet: Excel tabs and formulas",
+  description: "Plumbing estimating spreadsheet in Excel: the tabs, columns and formulas that tie quantities, prices and markups together, and the checks that prove it.",
+  lead: "A tab layout, a column layout with working formulas, and the checks and version habits that keep an Excel estimate traceable from the bid total back to the sheet.",
+  h1: "Plumbing estimating spreadsheet: how to structure it",
+  category: "How-to",
+  keywords: ["plumbing estimating spreadsheet", "plumbing estimate template excel", "plumbing takeoff spreadsheet", "plumbing estimating template", "excel estimating spreadsheet plumbing"],
+  datePublished: "2026-11-17",
+  dateModified: "2026-11-20",
+  readingMinutes: 8,
+  related: ["/services/plumbing-estimating", "/services/plumbing-takeoff"],
+  faq: [
+    { q: "Is Excel good enough for plumbing estimating?", a: "Yes, for many small and mid-size contractors, if the workbook keeps inputs apart from formulas, enters each quantity once and checks its own totals. Dedicated estimating software adds a maintained cost database and assemblies, which pays off with several estimators, repeating assemblies and a larger bid volume. The guide to [plumbing takeoff services vs software](/guides/plumbing-takeoff-services-vs-software) compares the options." },
+    { q: "Do you provide a plumbing estimating template?", a: "Every takeoff and estimate we deliver arrives as an Excel workbook with a summary tab, a tab per system and live formulas you can edit. If you already price in your own template, send it with the plans and we fill it in instead. We also work in Trimble Accubid and export to CSV for other estimating software." },
+    { q: "Can I build a plumbing estimating spreadsheet in Google Sheets instead of Excel?", a: "Yes, for most of it. The tab layout, columns, named inputs, check cells and common functions such as ROUND, SUMIFS and XLOOKUP carry over. Excel-only tools such as Power Query and VBA macros do not, so keep the inputs on one tab and test each total by hand. If several people edit one file, keep version history on and save an as-submitted copy." },
+  ],
+};
+
+A plumbing estimating spreadsheet works when every quantity is entered once, every price and rate sits in a named input cell, and every total can be traced back to a sheet and a line. Build it as a summary tab, an assumptions tab, a fixtures tab and one tab per system, all with the same columns, and add check cells that prove the totals agree. Built that way, an addendum means changing net quantities in one place, and the purchase quantities, costs and summary follow by formula.
+
+<Callout type="tip" title="See a sample workbook">
+
+The [sample takeoffs](/samples) page shows the layout, and you can [request a plumbing sample](/contact?service=sample-request#request-a-quote) with client details removed. If you already price in your own template, we can fill that in instead.
+
+</Callout>
+
+## Design rules for a plumbing estimating spreadsheet
+
+1. **Enter each quantity once.** Type or paste it on the system tab where it is measured, and read it by formula everywhere else.
+2. **Keep inputs apart from calculations.** Style inputs one way, such as blue text on a light fill, leave formulas plain black, and never mix the two in one column.
+3. **Keep constants out of formulas.** Tax, burden, markups, stock lengths and allowances belong in named cells on the assumptions tab, such as `TaxRate`. A formula like `=F5*1.1` hides a decision nobody can see.
+4. **Use the same columns on every tab.** Same order, names and units, so totals and checks work the same way everywhere.
+5. **Put line items in Excel Tables,** with names such as `tblDWV`. Tables extend formulas to new rows and stop ranges from ending short.
+6. **Skip merged cells in data areas.** They break sorting, filtering and copying.
+7. **Avoid links to other workbooks, and macros you do not need.** Links break when files move, and many offices block macros.
+8. **Show your work:** a sheet and detail reference on every line, and the assumption behind it where one applies.
+9. **Round late.** Keep full precision, and round only for display and for purchase units such as stock lengths.
+
+## The tabs a plumbing estimating spreadsheet needs
+
+Start with these tabs. A small job can run on Summary, Assumptions, one takeoff tab and Markups.
+
+| Tab | What it holds | Where its numbers come from |
+|---|---|---|
+| Summary | Cost by system and cost type, markups, bid total, alternates and unit prices | Formulas that read the other tabs, no typed numbers |
+| Assumptions | Project data, wage rates, burden, tax, markups, allowance factors, stock lengths, difficulty multipliers | Typed inputs, each named and sourced |
+| Fixtures | Counts by tag from the schedule, checked against the plans, with carriers, trim and who furnishes each | Takeoff counts and the fixture schedule |
+| System tabs | One per system: waste and vent, domestic water, storm, gas, medical gas, fire sprinkler and underground | Takeoff quantities with sheet references |
+| Equipment | Water heaters, pumps, tanks, interceptors and backflow assemblies, with connections and who furnishes them | The equipment schedule and quotes |
+| Labor | Hours by system and classification, rates and loaded cost | System tab hours and the assumptions tab |
+| Quotes | Supplier and subcontractor quotes with date, validity, exclusions and addenda acknowledged | The quote documents |
+| Job costs | Supervision, permits, bonds, insurance, mobilization, cleanup and closeout | Your own rules and the bid documents |
+| Markups | Material tax, overhead, profit, contingency and escalation, then bond, in the order applied | The assumptions tab |
+| RFIs and gaps | Sheet reference, question, assumption used and status for each scope gap | The takeoff review |
+| Revisions | The version log and the addenda log | Your own entries |
+
+Keep tab names short with no spaces, such as `DWV` and `Water`, because a name with spaces needs quotes in every formula that refers to it.
+
+## Columns and formulas for each system tab
+
+Every system tab uses the same columns, A to O, with the formulas shown for row 5:
+
+| Column | What it holds | Formula or rule |
+|---|---|---|
+| A: Item ID | A short code for repeat items | Unique, and used for price lookups |
+| B: Description | What the item is | Written the same way every time |
+| C and D: Size, material | Two separate columns | Used for filtering and `SUMIFS` |
+| E: Sheet and detail | Where the quantity came from | Required on every line |
+| F: Net quantity | As drawn | The only typed quantity |
+| G: Unit | LF, VLF, EA, SF, SY, LS, CY or TON | A data validation list, never free text |
+| H: Allowance | The waste or fitting factor | Looked up from the assumptions tab by material and size class |
+| I: Pack | Stock length or pack size | 1 for counted items, never blank, because `CEILING` with a blank pack returns 0 |
+| J: Quantity to buy | Net plus allowance, rounded up | `=CEILING(ROUND(F5*(1+H5),4),I5)` |
+| K: Unit price | From your price list or a quote | `=XLOOKUP(A5,PriceList[ID],PriceList[Price],"check")` |
+| L: Material cost | Quantity to buy times unit price | `=J5*K5` |
+| M: Labor unit | Hours per unit, from your own history | Looked up from a labor unit table |
+| N: Labor hours | Net quantity times labor unit, adjusted for conditions | `=F5*M5*Difficulty` |
+| O: Notes | Assumptions and open questions | Text |
+
+- **Round once per size and material.** The `ROUND` inside `CEILING` guards against floating-point noise, so an exact multiple is not pushed to the next stock length. Put `CEILING` on a roll-up row for each size and material rather than on every floor or phase line: ten 12 LF lines with a 5 percent allowance and 10 ft stock lengths come to 200 LF rounded line by line, and 130 LF when the 120 LF total is rounded once (illustrative numbers). The [guide to allowances](/guides/plumbing-pipe-waste-and-fitting-allowances) explains how the factor in column H is set.
+- **The lookup and its fallback.** `XLOOKUP` returns the word check when an ID is missing, so column L shows an error on that line and on every total that includes it, and a missing price cannot slip through as a zero. It needs Excel 2021, Excel 2024 or Microsoft 365. In older versions, use `=IFERROR(INDEX(PriceList[Price],MATCH(A5,PriceList[ID],0)),"check")`.
+- **Difficulty.** A named input for height, congestion and phasing, set from your own history like the labor units in column M. The guide to [how to estimate a plumbing job](/guides/how-to-estimate-a-plumbing-job) covers the labor method.
+
+## Build the summary and markups tabs
+
+The Summary reads the other tabs and holds no typed numbers: systems in rows, cost types in columns (material, labor hours, labor cost, equipment, subcontracts, total), and each cell a formula such as `=SUM(tblDWV[Material cost])`, or `=SUMIFS(Takeoff[Material cost],Takeoff[System],A5)` if you keep one combined table with a System column. Calculate alternates and unit prices in their own blocks, so they never leak into the base bid.
+
+Put every markup on the Markups tab in the order you apply it, the same order on every job, and name each percentage as a markup on cost, `=Subtotal*(1+Markup)`, or a margin on price, `=Subtotal/(1-Margin)`. The same percentage gives two different totals. The guide to [how to estimate a plumbing job](/guides/how-to-estimate-a-plumbing-job) gives a typical order and a worked margin example.
+
+Bond premiums are charged on a contract amount that already includes the premium. With a flat rate, `=Subtotal/(1-BondRate)` returns that amount without a circular reference. Many sureties use tiered rates, so ask yours how it calculates the premium. Finish with a tie-out cell that compares the Summary total with the amount on the bid form.
+
+## Units, cost codes and item IDs
+
+- **Units.** One list, LF, VLF, EA, SF, SY, LS, CY and TON, enforced by data validation. A unit typed as LF, ft and feet splits a total three ways.
+- **Cost codes.** The Division 22 section numbers from the project's own specification, copied from its table of contents, so your codes match the documents and your history compares from job to job. [CSI MasterFormat](https://www.csiresources.org/standards/masterformat) defines the structure.
+- **Item IDs.** Stable codes for repeat items, because the price and labor lookups depend on them.
+
+<Cta title="Start from a finished workbook" href="/services/plumbing-estimating" label="See plumbing estimating services">Takeoffs start at $149 and plumbing estimates at $199. Both arrive as an Excel workbook with live formulas, normally within 24–72 hours.</Cta>
+
+## Check formulas before you trust the total
+
+1. **Totals agree two ways.** The Summary total should equal the sum of the tab totals, with a check cell that says `OK` or `CHECK`, such as `=IF(ROUND(B20-SUM(B5:B14),2)=0,"OK","CHECK")`.
+2. **Blanks and zeros.** Conditional formatting flags a line with a quantity and no price, or a price and no quantity.
+3. **Numbers stored as text.** They sit left-aligned in the cell and drop out of sums. Values pasted from a PDF are the usual cause.
+4. **Ranges that stop short.** A SUM that ends at row 40 when the data runs to row 46. Tables prevent this.
+5. **Overwritten formulas.** A typed number in a formula column, usually pasted from takeoff software. Paste into the net quantity column only, with Paste Special, Values. Show Formulas on the Formulas tab finds overwrites, and Trace Precedents follows a number back to its source.
+6. **Mixed units.** Feet in a column of inches, or LF totaled with EA.
+7. **Hidden rows, columns and tabs.** Unhide everything before the final review, and run Excel's Document Inspector before a file leaves your office.
+8. **Double counting between tabs.** A carrier on the Fixtures tab and again on a system tab, or sleeves counted in two places.
+9. **A sanity check against history.** Compare the total per fixture or per floor area with similar jobs, and explain any gap.
+
+## Version control for estimates
+
+- **File names** with the project, trade, date and version, such as `ProjectName_Plumbing_2026-11-17_v03.xlsx`. A date written year first sorts correctly.
+- **Never overwrite a submitted bid.** Save the as-submitted copy as read-only, plus a PDF of the forms and the Summary.
+- **One working copy,** edited by one person at a time or split by tab with a named owner, on a shared drive with version history rather than in emailed copies.
+- **Two logs on the Revisions tab:** a version log (version, date, initials, addenda included, what changed, and the bid total read from the Summary, never typed) and an addenda log (number, date, sheets affected, priced or not), the same one the [plumbing bid checklist](/guides/plumbing-bid-checklist) uses.

@@ -1,0 +1,126 @@
+@layer components {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 560px) {
+    .form-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+  .field > label,
+  .field > .lbl {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+  .field .req {
+    color: #b3261e;
+  }
+  .input,
+  .select,
+  .textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1.5px solid #7d86a6;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    font: inherit;
+    color: var(--color-ink);
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .textarea {
+    min-height: 112px;
+    resize: vertical;
+  }
+  .input:hover,
+  .select:hover,
+  .textarea:hover {
+    border-color: #5b6280;
+  }
+  .input:focus,
+  .select:focus,
+  .textarea:focus {
+    /* Invisible normally; Windows High Contrast turns it into a real outline. */
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: var(--color-navy-2);
+    box-shadow: 0 0 0 3px rgb(245 180 0 / 0.45);
+  }
+  .input[aria-invalid="true"],
+  .select[aria-invalid="true"],
+  .textarea[aria-invalid="true"] {
+    border-color: #b3261e;
+  }
+  .select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%231f1b50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+  }
+  .help {
+    font-size: 0.85rem;
+    color: var(--color-mut);
+  }
+  .err {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #b3261e;
+  }
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.95rem;
+  }
+  .check input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--color-navy);
+  }
+  /* honeypot: invisible to people, tempting to bots */
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .alert {
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .alert.ok {
+    border: 1px solid #bfe5cf;
+    background: #e8f7ef;
+    color: #0f5a36;
+  }
+  .alert.bad {
+    border: 1px solid #f4c7c3;
+    background: #fdecea;
+    color: #8a1f17;
+  }
+  .form-fine {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--color-mut);
+  }
+  .form-fine a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

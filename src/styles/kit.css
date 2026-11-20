@@ -1,0 +1,191 @@
+/*
+ * The plumbing kit: near-zero-weight motifs any page can use, with the home page's own values (HOME-JOURNEY C3, C5):
+ * a text-safe ink for the system colors, legend swatches and legend lines, the flanged pipe spool, the framed drawing
+ * figure, and the scroll offset for the sticky header plus the content pages' section bar. Color is never the only
+ * signal: every swatch, line and run sits next to its text label.
+ */
+@layer components {
+  /* --bar-h: the sticky section bar's height, counted by the scroll offset and by sticky columns (HoverTabs, the FAQ
+     help card). It is 56px only on a page that has a sticky jump bar (any element with data-jump="bar", which
+     PageJump variant="bar" renders), from 1024px; everywhere else 0, so pages without a bar keep base.css's offset. */
+  :root {
+    --bar-h: 0px;
+  }
+  @media (width >= 1024px) {
+    :root:has([data-jump="bar"]) {
+      --bar-h: 56px;
+      /* in-page jumps and keyboard focus stop below the header and the bar */
+      scroll-padding-top: calc(var(--header-h) + var(--bar-h) + 16px);
+    }
+  }
+
+  /* ---------- system palette ---------- */
+  /* [data-c] sets --c, the pipe color (sections.css). --c-ink is the shade for small text in that color: at least 4.5:1
+     on white and on the alt grey (the drawings' TEXT_SAFE shades in illustrations/parts.tsx). */
+  [data-c="cold"] {
+    --c-ink: var(--color-cold);
+  }
+  [data-c="hot"] {
+    --c-ink: #b8362a;
+  }
+  [data-c="waste"] {
+    --c-ink: var(--color-waste);
+  }
+  [data-c="vent"] {
+    --c-ink: #1f7a4d;
+  }
+  [data-c="storm"] {
+    --c-ink: #0b6f7c;
+  }
+  [data-c="gas"] {
+    --c-ink: #8a5a00;
+  }
+  [data-c="fire"] {
+    --c-ink: var(--color-fire);
+  }
+  [data-c="med"] {
+    --c-ink: #3f6b80;
+  }
+
+  /* ---------- legend swatch: a scrap of plan paper with a run in the system color (home demo pills) ---------- */
+  /* <i class="swatch" data-c="cold" aria-hidden="true"></i>; vent and data-dash are dashed; data-c="fixtures" is a count
+     mark, "equipment" a pair of rings, "all" four runs; .sm is the small size. Drawings keep their colors in forced colors. */
+  .swatch {
+    display: inline-block;
+    flex: none;
+    width: 28px;
+    height: 18px;
+    border-radius: 6px;
+    background: #f4f6fb linear-gradient(var(--c, var(--color-navy)), var(--c, var(--color-navy))) center / 16px 4px no-repeat;
+    box-shadow: inset 0 0 0 1px rgb(31 27 80 / 0.14);
+    vertical-align: middle;
+    forced-color-adjust: none;
+  }
+  .swatch.sm {
+    width: 22px;
+    height: 14px;
+    border-radius: 4px;
+    background-size: 12px 3px;
+  }
+  .swatch:is([data-c="vent"], [data-dash]) {
+    background-image: repeating-linear-gradient(90deg, var(--c, var(--color-navy)) 0 5px, transparent 5px 8px);
+  }
+  .swatch:is([data-c="fixtures"], [data-c="equipment"]) {
+    background-size: 100% 100%;
+    background-image: radial-gradient(circle, var(--color-amber) 0 3.6px, var(--color-navy) 3.8px 5.2px, transparent 5.4px);
+  }
+  .swatch[data-c="equipment"] {
+    background-image: radial-gradient(circle, #fff 0 2.4px, var(--color-navy) 2.6px 3.8px, #fff 4px 4.6px, var(--color-navy) 4.8px 6px, transparent 6.2px);
+  }
+  .swatch[data-c="all"] {
+    background-image:
+      linear-gradient(var(--color-cold), var(--color-cold)), linear-gradient(var(--color-hot), var(--color-hot)),
+      linear-gradient(var(--color-waste), var(--color-waste)), linear-gradient(var(--color-vent), var(--color-vent));
+    background-size: 16px 2px;
+    background-position:
+      6px 4px,
+      6px 7px,
+      6px 10px,
+      6px 13px;
+  }
+
+  /* ---------- legend line: a 14 x 3 px run in the system color before a scope line (home explorer counts) ---------- */
+  .legend-line {
+    display: inline-block;
+    flex: none;
+    width: 14px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--c, var(--color-navy));
+    vertical-align: middle;
+    forced-color-adjust: none;
+  }
+  .legend-line:is([data-c="vent"], [data-dash]) {
+    border-radius: 0;
+    background: repeating-linear-gradient(90deg, var(--c, var(--color-navy)) 0 3px, transparent 3px 5.5px);
+  }
+
+  /* ---------- pipe spool: a flanged run with an amber flow dash (home process steps), as a divider ---------- */
+  /* <span class="spool" aria-hidden="true"></span> runs across its box; data-dir="v" runs down (--len sets the length).
+     The flow moves with scrolling, never on its own; data-c colors the flow in a system color. */
+  .spool {
+    --pipe: rgb(31 27 80 / 0.12);
+    --flange: rgb(31 27 80 / 0.3);
+    --flow: var(--color-amber);
+    display: block;
+    width: var(--len, 100%);
+    height: 20px;
+    background:
+      linear-gradient(90deg, var(--flange) 0 6px, transparent 6px calc(100% - 6px), var(--flange) calc(100% - 6px)),
+      linear-gradient(90deg, var(--flow) 0 6px, transparent 6px) 0 50% / 12px 2px repeat-x,
+      linear-gradient(var(--pipe), var(--pipe)) 0 50% / 100% 10px no-repeat;
+  }
+  .spool[data-dir="v"] {
+    width: 20px;
+    height: var(--len, 48px);
+    background:
+      linear-gradient(180deg, var(--flange) 0 6px, transparent 6px calc(100% - 6px), var(--flange) calc(100% - 6px)),
+      linear-gradient(180deg, var(--flow) 0 6px, transparent 6px) 50% 0 / 2px 12px repeat-y,
+      linear-gradient(var(--pipe), var(--pipe)) 50% 0 / 10px 100% no-repeat;
+  }
+  .spool[data-c] {
+    --flow: var(--c);
+  }
+  :is(.tone-dark, .pg-hero) .spool {
+    --pipe: rgb(255 255 255 / 0.16);
+    --flange: rgb(255 255 255 / 0.34);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .spool {
+        animation: spool-x linear both;
+        animation-timeline: view();
+      }
+      .spool[data-dir="v"] {
+        animation-name: spool-y;
+      }
+    }
+  }
+  @keyframes spool-x {
+    to {
+      background-position:
+        0 0,
+        96px 50%,
+        0 50%;
+    }
+  }
+  @keyframes spool-y {
+    to {
+      background-position:
+        0 0,
+        50% 96px,
+        50% 0;
+    }
+  }
+
+  /* ---------- drawing figure: the sheet in a frame with the honesty strip (DrawingFigure) ---------- */
+  .drawing-fig {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    background: var(--color-alt);
+  }
+  .drawing-fig svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .drawing-fig figcaption {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 14px;
+    border-top: 1px solid var(--color-line);
+    background: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-mut);
+  }
+}

@@ -1,0 +1,266 @@
+/*
+ * Starting-price cards (home pricing section): four cards, one row of four on desktop (the reference's density),
+ * two by two on tablets, compact rows with a square thumbnail on phones. The media is a zoomed crop of one of our
+ * drawings on its paper.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(18px, 1.8vw, 26px);
+  }
+}
+.grid > li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ---------- media: a crop of one drawing ---------- */
+.media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: calc(var(--r-card) - 1px) calc(var(--r-card) - 1px) 0 0;
+  background: var(--color-alt);
+}
+.drawing {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scale(var(--zoom, 1.4));
+  transform-origin: var(--at, 50% 50%);
+  transition: transform 0.3s ease;
+}
+.card:hover .drawing,
+.card:focus-within .drawing {
+  transform: scale(calc(var(--zoom, 1.4) * 1.08));
+}
+/* Group tag (Takeoff, Estimate...) straddles the bottom edge of the drawing, so it never hides a label on it. */
+.tag {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  margin: -35px 0 10px;
+  padding: 3px 11px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(21 18 58 / 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+  pointer-events: none;
+}
+
+/* ---------- body ---------- */
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 22px 24px 24px;
+}
+.title {
+  margin: 0 0 6px;
+  font-size: var(--fs-card);
+}
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+/* The whole card is the link (the title's ::after covers it); .hr-card is position: relative. */
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--r-card);
+}
+/* Focus ring on the whole card instead of the title text. */
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.line {
+  margin: 0 0 20px;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+}
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.goIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.card:hover .goIcon,
+.card:focus-within .goIcon {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+
+/* Four narrow columns (1024 to 1279): the arrow alone, so the price pill and Explore never collide. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .goText {
+    display: none;
+  }
+  .body {
+    padding: 20px;
+  }
+}
+
+/* ---------- phones: a row with a square thumbnail ---------- */
+@media (max-width: 639px) {
+  .card {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    padding: 14px;
+  }
+  .media {
+    width: 96px;
+    height: 96px;
+    aspect-ratio: auto;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+  }
+  /* Height-led so the drawing keeps its 16:10 shape and the square shows its middle. */
+  .drawing {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: auto;
+    height: 100%;
+    aspect-ratio: 16 / 10;
+    translate: -50% 0;
+  }
+  .tag {
+    display: none;
+  }
+  .body {
+    padding: 0;
+  }
+  .title {
+    margin-bottom: 2px;
+    font-size: var(--fs-card-sm);
+  }
+  .line {
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .goText {
+    display: none;
+  }
+  .goIcon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ---------- what moves the price ---------- */
+.drivers {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px 18px;
+  margin-top: clamp(28px, 3vw, 40px);
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card);
+  background: var(--color-alt);
+}
+.driversText p {
+  margin: 0;
+  max-width: 78ch;
+}
+.driversText strong {
+  color: var(--color-navy);
+}
+.driversText .custom {
+  margin-top: 4px;
+  font-size: 0.94rem;
+  color: var(--color-mut);
+}
+.custom a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.compare {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+/* the button moves beside the text only where the text column keeps three lines (from 900px it squeezed to four) */
+@media (min-width: 1024px) {
+  .drivers {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px 24px;
+    padding: 22px 28px;
+  }
+  .compare {
+    grid-column: auto;
+  }
+}
+@media (max-width: 559px) {
+  .drivers {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px 16px;
+  }
+  /* full width and a touch smaller, so the label stays on one line at 375px */
+  .compare {
+    justify-self: stretch;
+    padding-inline: 1rem;
+    font-size: 0.95rem;
+  }
+}
+

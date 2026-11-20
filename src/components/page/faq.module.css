@@ -1,0 +1,206 @@
+/*
+ * FAQ section (the home FAQ, home/revamp/faq.module.css): heading and the "Still have questions?" card on the left,
+ * numbered accordion cards on the right. The cards keep the global .faq-item / .faq-q / .faq-a class names (scripts
+ * read them), and this module resets what those global rules would add (the line style and their plus icon).
+ */
+
+.layout {
+  display: grid;
+  gap: 32px;
+}
+.head :global(.sec-head) {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "head qa"
+      "help qa";
+    gap: 36px clamp(48px, 6vw, 88px);
+    align-items: start;
+  }
+  .head {
+    grid-area: head;
+  }
+  .qa {
+    grid-area: qa;
+  }
+  /* A grid item's sticky range is its own grid area, so the card rides along until the last question.
+     It clears the content pages' sticky section bar too (--bar-h, kit.css), as the scroll padding does. */
+  .help {
+    grid-area: help;
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 24px);
+  }
+}
+
+/* ---------- accordion cards ---------- */
+.list {
+  display: grid;
+  gap: 14px;
+  /* lets ::details-content animate to height: auto (Chromium); other browsers open instantly */
+  interpolate-size: allow-keywords;
+}
+.item {
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  color: var(--color-ink);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.item[open] {
+  border-color: var(--color-amber);
+  box-shadow: 0 14px 34px rgb(138 90 0 / 0.1);
+}
+.item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition-property: block-size, content-visibility;
+  transition-duration: 0.28s;
+  transition-timing-function: ease;
+  transition-behavior: allow-discrete;
+}
+.item[open]::details-content {
+  block-size: auto;
+}
+
+.sum {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px 20px 28px;
+  /* the focus ring follows the card's corners */
+  border-radius: 19px;
+  list-style: none;
+  cursor: pointer;
+}
+.sum::-webkit-details-marker {
+  display: none;
+}
+/* the global line accordion draws its own plus here */
+.sum::after {
+  content: none;
+}
+.num {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+}
+.q {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+  color: var(--color-navy);
+}
+.icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  color: var(--color-navy);
+  transition:
+    transform 0.25s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.icon::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'><path d='M5 12h14M12 5v14'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'><path d='M5 12h14M12 5v14'/></svg>") center / contain no-repeat;
+}
+.item[open] .icon {
+  transform: rotate(45deg);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+@media (hover: hover) {
+  .item:not([open]):hover {
+    box-shadow: var(--shadow-card);
+  }
+  .item:not([open]):hover .icon {
+    background: var(--color-tint);
+    color: var(--color-amber-ink);
+  }
+}
+@media (forced-colors: active) {
+  .icon::before {
+    background: CanvasText;
+  }
+  .item[open] {
+    border-color: Highlight;
+  }
+}
+
+.a {
+  /* answers line up under the question text */
+  max-width: none;
+  padding: 0 28px 24px calc(28px + 2.4rem + 14px);
+  color: var(--color-mut);
+}
+.a p {
+  max-width: 68ch;
+  margin: 0 0 0.8em;
+}
+.a p:last-child {
+  margin-bottom: 0;
+}
+.a a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.reviewed {
+  margin: 22px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-mut);
+}
+:global(.tone-dark) .reviewed {
+  color: var(--color-onnavy);
+}
+
+@media (max-width: 639px) {
+  .sum {
+    grid-template-columns: 1.9rem minmax(0, 1fr) 34px;
+    gap: 10px;
+    padding: 16px 14px 16px 18px;
+  }
+  .q {
+    font-size: 1rem;
+  }
+  .icon {
+    width: 34px;
+    height: 34px;
+  }
+  .a {
+    padding: 0 18px 20px;
+  }
+}
+
+/* ---------- help card column ---------- */
+.help {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}

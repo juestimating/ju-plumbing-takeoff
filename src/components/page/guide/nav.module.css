@@ -1,0 +1,396 @@
+/*
+ * Guide reading navigator (GuideNav): a sticky rail from 1024px, a sticky disclosure bar below. Only one of the two
+ * navs is displayed at any width, so the accessibility tree has one "On this page". --p (0 to 1, set from the scroll
+ * handler) fills the riser and the bar's bottom line; both and the tick counts need JS ([data-js]), so without it the
+ * rail is a plain static list. Nothing here changes the article's layout.
+ */
+.nav {
+  --p: 0;
+}
+
+/* ---------- rail (1024 up) ---------- */
+.rail {
+  display: none;
+}
+/* The rail shrinks with the aside (a flex column capped at the screen's height): the head keeps its size and the list
+   scrolls (.scroll), with the same rising shade as the phone panel while more of it sits below. */
+@media (min-width: 1024px) {
+  .nav,
+  .rail {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .rail {
+    padding: 18px 16px 14px 18px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--r-card, 20px);
+    background: #fff;
+  }
+  .head {
+    flex: none;
+  }
+  .scroll {
+    min-height: 96px;
+    margin: -5px;
+    padding: 5px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background:
+      linear-gradient(rgb(255 255 255 / 0), #fff 40%) center bottom / 100% 56px no-repeat local,
+      linear-gradient(rgb(21 18 58 / 0), rgb(21 18 58 / 0.1)) center bottom / 100% 32px no-repeat scroll,
+      #fff;
+  }
+  .barNav {
+    display: none;
+  }
+}
+/* label and minutes left; on the checklist guides the tick total and Clear wrap onto a second row */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 12px;
+  margin-bottom: 10px;
+}
+.label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.time {
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-mut);
+}
+
+/* the riser: a 4px track with a node per section, filling amber as you read */
+.track {
+  position: relative;
+  padding-left: 22px;
+}
+.track::before,
+.fill {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  width: 4px;
+  border-radius: 2px;
+}
+.track::before {
+  bottom: 6px;
+  background: var(--color-line);
+}
+.fill {
+  display: none;
+  height: calc((100% - 12px) * var(--p, 0));
+  background: var(--color-amber);
+  transition: height 0.12s linear;
+}
+.nav[data-js] .fill {
+  display: block;
+}
+
+.list,
+.sub,
+.plist,
+.psub {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list {
+  display: grid;
+  gap: 2px;
+}
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 6px;
+}
+.link {
+  position: relative;
+  display: block;
+  padding: 5px 8px 5px 10px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+/* node on the riser: centered on the track (track center 9px from its edge, the link starts 22px in) */
+.link::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 0.675em;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #c5cae0;
+  border-radius: 50%;
+  background: #fff;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.item[data-passed] > .link::before {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+}
+/* the section being read: navy on alt, the node a 14px amber ring (color and ring only, so no line rewraps) */
+.item[data-on] > .link {
+  background: var(--color-alt);
+  color: var(--color-navy);
+}
+.item[data-on] > .link::before {
+  left: -20px;
+  top: calc(0.675em - 2px);
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--color-amber);
+  background: #fff;
+}
+@media (hover: hover) {
+  .link:hover {
+    background: var(--color-alt);
+    color: var(--color-navy);
+  }
+  .link:hover::before {
+    border-color: var(--color-amber);
+  }
+}
+.sys {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  vertical-align: 0.2em;
+}
+.count {
+  min-width: 3.2em;
+  padding: 6px 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--color-mut);
+}
+.count[data-done],
+.pcount[data-done] {
+  color: var(--color-amber-ink);
+}
+
+/* ---------- tick summary (rail head and the top of the phone panel; JS only, since counts and Clear need it) ---------- */
+.ticks {
+  display: none;
+}
+.nav[data-js] .ticks {
+  display: grid;
+  flex-basis: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 12px;
+  margin-top: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-line);
+}
+.panel .ticks {
+  margin: 0 0 4px;
+  padding: 4px 0 10px;
+}
+.tickSum {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-navy);
+}
+.clear {
+  min-height: 36px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.clear:disabled {
+  color: var(--color-mut);
+  text-decoration: none;
+  cursor: default;
+}
+.tickNote {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-mut);
+}
+
+/* ---------- phone and tablet bar (below 1024): sticky with the aside, full bleed ---------- */
+.barNav {
+  margin-inline: calc(-1 * var(--gutter));
+}
+.bar {
+  position: relative;
+  border-bottom: 1px solid var(--color-line);
+  background: #fff;
+  box-shadow: 0 6px 16px -10px rgb(21 18 58 / 0.25);
+}
+.sum {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 20px;
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 12px;
+  min-height: 56px;
+  padding: 6px var(--gutter);
+  list-style: none;
+  cursor: pointer;
+}
+.sum::-webkit-details-marker {
+  display: none;
+}
+/* inset ring: the bar runs edge to edge */
+.sum:focus-visible {
+  outline-offset: -4px;
+}
+.lab {
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.cur {
+  grid-row: 2;
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-navy);
+}
+.total {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+}
+.chev {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  width: 20px;
+  height: 20px;
+  background: var(--color-navy);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center / contain no-repeat;
+  transition: transform 0.2s ease;
+}
+.bar[open] .chev {
+  transform: rotate(180deg);
+}
+.line {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: calc(var(--p, 0) * 100%);
+  height: 3px;
+  background: var(--color-amber);
+}
+.nav[data-js] .line {
+  display: block;
+}
+/* While more of the list sits below the fold, a shade rises from the panel's bottom edge (a background, so no text
+   loses contrast; 0.1 keeps the muted counts above 4.5:1); at the end of the list a white cover that scrolls with the
+   content hides it. The panel lies over the article, so it ends on a firm edge: a line (kept in forced colors) and a
+   tight shadow under the soft one. */
+.panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: min(60vh, 460px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 6px var(--gutter) 14px;
+  border: 1px solid #c5cae0;
+  border-top-color: var(--color-line);
+  border-radius: 0 0 16px 16px;
+  background:
+    linear-gradient(rgb(255 255 255 / 0), #fff 40%) center bottom / 100% 56px no-repeat local,
+    linear-gradient(rgb(21 18 58 / 0), rgb(21 18 58 / 0.1)) center bottom / 100% 32px no-repeat scroll,
+    #fff;
+  box-shadow:
+    0 3px 6px -1px rgb(21 18 58 / 0.16),
+    0 18px 40px -6px rgb(21 18 58 / 0.34);
+}
+.prow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.plink {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0 8px 12px;
+  border-left: 3px solid transparent;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.plink[data-on],
+.plink[aria-current] {
+  border-left-color: var(--color-amber);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.psub .plink {
+  padding-left: 28px;
+  font-size: 0.9rem;
+  color: var(--color-mut);
+}
+.pcount {
+  flex: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-mut);
+}
+
+@media (forced-colors: active) {
+  .item[data-on] > .link,
+  .plink[data-on],
+  .plink[aria-current] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .fill,
+  .line {
+    background: Highlight;
+  }
+}

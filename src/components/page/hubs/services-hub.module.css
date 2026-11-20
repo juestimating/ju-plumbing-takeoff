@@ -1,0 +1,358 @@
+/*
+ * /services: the need finder (HoverTabs, a list at every width; each panel opens on the bid line) and the catalog in
+ * the home pricing card language, the four cards for one bid joined into one pipe run. Global pieces: .hr-card,
+ * .hr-badge, .hr-checks, .hr-tile, .arrow-link, .btn. Motion is short and off under reduced motion.
+ */
+
+/* ---------- catalog ---------- */
+.groups {
+  display: grid;
+  gap: clamp(36px, 4vw, 52px);
+}
+.groupHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin: 0 0 18px;
+}
+.groupLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.groupLabel::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: currentColor;
+}
+.groupNote {
+  font-size: 0.95rem;
+  color: var(--color-mut);
+}
+.grid {
+  --gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.grid > li {
+  position: relative;
+  display: flex;
+}
+@media (min-width: 640px) {
+  .grid:not([data-kind="wide"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 900px) {
+  .grid[data-kind="types"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .grid[data-kind="seq"] {
+    --gap: clamp(18px, 1.8vw, 26px);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* one run through the four bands: a flanged spool bridges each gap at the pipe's height */
+  .grid[data-kind="seq"] > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 23px;
+    left: 100%;
+    z-index: 1;
+    width: var(--gap);
+    height: 20px;
+    background:
+      linear-gradient(90deg, var(--color-navy) 0 4px, transparent 4px calc(100% - 4px), var(--color-navy) calc(100% - 4px)),
+      linear-gradient(var(--color-navy), var(--color-navy)) 0 50% / 100% 10px no-repeat;
+    pointer-events: none;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+/* the band: plan paper with the bid line's pipe across it and the service's icon in a fitting */
+.band {
+  position: relative;
+  height: 64px;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: calc(var(--r-card, 20px) - 1px) calc(var(--r-card, 20px) - 1px) 0 0;
+  background:
+    linear-gradient(var(--color-navy), var(--color-navy)) 0 50% / 100% 10px no-repeat,
+    linear-gradient(var(--color-line) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--color-alt);
+}
+.fitting {
+  position: absolute;
+  top: 50%;
+  left: 22px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-navy);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-navy);
+  transform: translateY(-50%);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.card:hover .fitting,
+.card:focus-within .fitting {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+@media (forced-colors: active) {
+  .card:is(:hover, :focus-within) .fitting {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px 24px;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+}
+/* group tag straddles the band's bottom edge (the home pricing card) */
+.tag {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  margin: -35px 0 10px;
+  padding: 3px 11px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(21 18 58 / 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+  pointer-events: none;
+}
+.title {
+  margin: 0 0 6px;
+  font-size: var(--fs-card);
+}
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+/* the whole card is the link (the title's ::after covers it; .hr-card is position: relative) */
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--r-card, 20px);
+}
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.line {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--color-mut);
+}
+.note svg {
+  flex: none;
+  margin-top: 0.15em;
+  color: var(--color-amber-ink);
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+}
+/* a second link inside a whole-card link sits above the card's link layer */
+.over {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+}
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+/* the arrow is a CSS mask (no SVG per card) */
+.goIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.goIcon::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+@media (forced-colors: active) {
+  .goIcon::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+.card:hover .goIcon,
+.card:focus-within .goIcon {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+.card:hover .title {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+/* four narrow columns: the arrow alone, so the price pill and Explore never collide */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .grid[data-kind="seq"] .goText {
+    display: none;
+  }
+  .grid[data-kind="seq"] .body {
+    padding: 20px;
+  }
+}
+/* the ongoing card: copy left, the dedicated estimator link and the price right */
+@media (min-width: 900px) {
+  .card[data-wide] .body {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 40px;
+  }
+  .card[data-wide] .main {
+    flex: 1;
+  }
+  .card[data-wide] .side {
+    flex: none;
+    align-items: flex-end;
+    min-width: 300px;
+  }
+  .card[data-wide] .over {
+    align-self: flex-end;
+  }
+  .card[data-wide] .foot {
+    gap: 18px;
+  }
+}
+@media (max-width: 639px) {
+  .band {
+    height: 48px;
+  }
+  .fitting {
+    left: 16px;
+    width: 34px;
+    height: 34px;
+  }
+  /* no room beside the fitting: the group label already names the kind (as the home cards on phones) */
+  .tag {
+    display: none;
+  }
+  .body {
+    padding: 18px 18px 20px;
+  }
+}
+
+/* ---------- what moves the price (the home bar) ---------- */
+.drivers {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px 18px;
+  margin-top: clamp(28px, 3vw, 40px);
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: var(--color-alt);
+}
+.driversText {
+  max-width: 78ch;
+  margin: 0;
+}
+.driversText strong {
+  color: var(--color-navy);
+}
+.compare {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+@media (min-width: 1024px) {
+  .drivers {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px 24px;
+    padding: 22px 28px;
+  }
+  .compare {
+    grid-column: auto;
+  }
+}
+@media (max-width: 559px) {
+  .drivers {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px 16px;
+  }
+  .compare {
+    justify-self: stretch;
+    padding-inline: 1rem;
+    font-size: 0.95rem;
+  }
+}

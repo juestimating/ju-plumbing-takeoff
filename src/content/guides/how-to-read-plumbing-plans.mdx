@@ -1,0 +1,142 @@
+export const meta = {
+  slug: "how-to-read-plumbing-plans",
+  title: "How to read plumbing plans for takeoff",
+  description: "How to read plumbing plans for takeoff: sheets, legends, schedules, risers and details in the order estimators use. Or send plans for takeoffs from $149.",
+  lead: "The order to read a plumbing set in, what each sheet gives you, and where drawings and schedules disagree.",
+  h1: "How to read plumbing plans for takeoff",
+  category: "How-to",
+  keywords: ["how to read plumbing plans", "reading plumbing plans", "plumbing plan symbols", "plumbing riser diagram", "plumbing fixture schedule", "how to read plumbing blueprints"],
+  datePublished: "2026-11-17",
+  dateModified: "2026-11-20",
+  readingMinutes: 9,
+  related: ["/services/plumbing-takeoff", "/services/plumbing-estimating", "/services/preliminary-plumbing-estimate"],
+  faq: [
+    { q: "What do NIC, by others and OFCI mean on plumbing plans?", a: "They say who supplies and installs an item. NIC means not in contract, so the item stays out of your price and goes on your exclusions list. By others means another trade or the owner carries it. OFCI means owner furnished, contractor installed: you carry the labor to set and connect the item, not the material. Firms use their own variations, so check the abbreviation list on your set." },
+    { q: "Where do I find pipe material on plumbing plans?", a: "Often not on the plan at all. Pipe materials by service and location are normally set in the Division 22 specification, and drawing notes or details can add to them or override them. One line type on a plan can stand for more than one material, so read the specification before you assign materials to takeoff types." },
+    { q: "How do I find the scale of a plumbing plan?", a: "Look for the scale in the title block or under each view, then calibrate the sheet in your takeoff software against a printed dimension and confirm it with a second one. A resized or re-exported PDF can carry the wrong scale. Riser diagrams are usually schematic with no scale, and details carry their own." },
+  ],
+};
+
+Reading plumbing plans for a takeoff is mostly a question of order, because each document answers a different question. Plans show where pipe runs, schedules say what gets installed, risers show how high it goes, and the specifications say what it is made of. Read them in this sequence and you will not measure a run before you know what its line type means:
+
+1. **Check the index and revisions** against the sheets you have.
+2. **Study the legend, abbreviations and general notes,** and write down every question.
+3. **Go through the Division 22 specification** and the bid instructions.
+4. **Read the fixture and equipment schedules** and build the count sheet.
+5. **Calibrate each plan sheet** and read the plans one system at a time.
+6. **Read the riser diagrams and isometrics,** and match them to the plans.
+7. **Check details, enlarged plans and sections** for components the plans omit.
+8. **Read the architectural, structural and civil sheets** that affect plumbing.
+9. **Reconcile what you found.** Conflicts and gaps go into a log that becomes RFIs.
+
+Then measure, following [how to do a plumbing takeoff](/guides/how-to-do-a-plumbing-takeoff) and the [plumbing takeoff checklist](/guides/plumbing-takeoff-checklist).
+
+## Plumbing plan sheet types and what each one shows
+
+Sheet names and numbering vary by firm, so treat this table as a guide, not a rule.
+
+| Sheet | What it shows | What you take from it |
+|---|---|---|
+| Cover sheet and index | Sheet list, project data, revision dates | Whether your set is complete and current |
+| General notes, legend, abbreviations | Symbols, line types and rules for the whole set | What every mark means on this project |
+| Fixture and equipment schedules | Tags, descriptions, connection sizes, remarks | Counts, connection sizes and who furnishes what |
+| Floor plans (waste and vent, water, often combined) | Horizontal piping by system, with sizes, fixtures and valves | Pipe lengths by size, valve and cleanout counts |
+| Roof plan | Roof drains, overflow drains, vent penetrations, rooftop connections | Storm drainage and vent terminations |
+| Underground or site plan | Building sewer, storm, water service, gas service, inverts | Trench lengths, depths and tie-ins |
+| Riser diagrams | Vertical piping by stack, floor by floor, drawn as a schematic | Vertical runs, valves and cleanouts at each floor |
+| Isometrics and enlarged plans | Restrooms, equipment rooms and complex stacks in three dimensions or at larger scale | Fittings, offsets and equipment connections |
+| Details | Typical installations: hangers, firestopping, drains, equipment piping | Components and accessories for each assembly |
+| Specifications | Materials, methods, testing, submittals | Pipe material by service, insulation, hangers, tests |
+
+Outside the P sheets, architectural plans give room names, ceiling heights, wall types and fire-rated assemblies; structural drawings give slab and footing depths and penetrations; civil sheets give site utilities and inverts; and mechanical and kitchen sheets show equipment that needs a plumbing connection.
+
+## Start with the index, legend and general notes
+
+Compare the sheet index with the sheets you have, and the revision dates printed on each sheet with the dates in the index. A missing or superseded sheet is the most expensive thing to discover after you have measured it.
+
+The legend defines every line type and symbol on the set. Read it before you measure, and do not carry assumptions over from the last job. General notes can add scope that no drawing shows, such as default pipe sizes, items furnished by others and requirements for insulation, sleeves or cleanouts. Keynotes on individual sheets do the same, and one keynote can add a trap primer or a valve to a single run. Notes marked typical or similar apply to every matching condition on the sheet, not only the one beside the note.
+
+## How to read plumbing symbols, line labels and fixture tags
+
+Symbols and tags vary by engineer and project, so the legend on your set overrides the tables below. If a symbol is not in the legend, ask by RFI instead of guessing.
+
+Pipe lines are identified by letters placed in the line or by line type (solid, dashed, dash-dot). Common labels:
+
+| Label | Often means | What to take off |
+|---|---|---|
+| W or SAN | Sanitary waste | Pipe by size and material, fittings, cleanouts |
+| V | Vent | Pipe, vent headers, roof penetrations |
+| CW | Domestic cold water | Pipe, valves, insulation where specified |
+| HW | Domestic hot water | Pipe, valves, insulation |
+| HWR | Hot water return or recirculation | Pipe, balancing valves, pump |
+| SD or ST | Storm drain | Pipe, leaders, cleanouts |
+| G | Fuel gas | Pipe, shutoff valves, regulators |
+
+Fixture and device tags sit in circles, squares or diamonds beside the symbol. These are common:
+
+| Tag | Often means | What to take off with it |
+|---|---|---|
+| WC | Water closet | Fixture, carrier if wall hung, flush valve or tank trim, stop and supply |
+| UR | Urinal | Fixture, carrier if wall hung, flush valve and supply unless waterless |
+| LAV | Lavatory | Fixture, faucet, trap, stops and supplies, protective cover if accessible |
+| SK | Sink | Fixture, faucet, trap, stops and supplies |
+| MS | Mop sink | Basin, faucet, drain, hose and bracket if scheduled |
+| DF | Drinking fountain | Fixture, supply, trap, waste |
+| EWC | Electric water cooler | Unit, supply, trap, waste (power by others) |
+| SH | Shower | Valve, head, drain, pan or base as scheduled |
+| FD | Floor drain | Body, strainer, trap, trap primer connection |
+| FS | Floor sink | Body, grate or strainer, trap, indirect waste connections |
+| HB | Hose bibb | Valve, vacuum breaker, supply branch |
+| CO | Cleanout | Type (floor, wall, grade), size, cover or box |
+| RD | Roof drain | Body, sump receiver, strainer, leader connection |
+| WH | Water heater | Unit, connections, relief valve and discharge, expansion tank where drawn |
+| TP | Trap primer | Primer device and tubing to each trap served |
+
+Valve symbols vary more than any other family. Isolation, check, balancing, pressure-reducing and mixing valves each have their own mark in the legend, and the specification says which type applies.
+
+## Read the fixture and equipment schedules
+
+The fixture schedule is the first document you count from. Its columns usually run from the tag and description through the basis-of-design model, the waste, vent, cold and hot water connection sizes and the mounting notes to the remarks. Take four things from it:
+
+- **The tag list,** which becomes your count sheet.
+- **Connection sizes,** which tell you branch pipe sizes at each fixture.
+- **Remarks,** which often hold scope: provide a carrier, provide a trap primer, owner furnished and contractor installed, accessible mounting.
+- **Mounting heights,** which affect vertical piping and rough-in.
+
+Equipment schedules (water heaters, pumps, tanks, interceptors, softeners, backflow assemblies) give the model, connection sizes, accessories and who furnishes, sets and connects each unit. Capacity columns rarely change the takeoff, but they identify the exact unit you are pricing.
+
+Schedules and plans can disagree: a tag on the schedule may appear on no plan, the counts may differ, or a scheduled connection size may not match the pipe drawn. Log every conflict with both sheet numbers.
+
+## Read the floor plans one system at a time
+
+Whether a set combines the systems on one sheet or splits them, read one system at a time, so you can follow each run to its end.
+
+- **Waste and vent plans** show fixtures, branch drains, mains, cleanouts, floor drains and vents. Sizes are called out where they change, not on every segment, so follow a run back to the last size shown and check the general notes for default sizes. Take horizontal lengths from the plan; the extra length from slope is too small to matter.
+- **Water plans** show cold, hot and return lines, valves, equipment connections and risers. Sizes usually step down toward the fixtures, so read each size where it changes.
+- **Underground and site plans** show building sewers, storm piping, water service and gas service, with invert elevations (often marked IE or INV) and sometimes profiles. Take the length from the plan and the depth from the inverts.
+- **Gas plans** show piping to appliances, with regulators and shutoffs.
+
+Notes on elevation matter as much as lines. Phrases such as above ceiling, in slab, below slab and exposed tell you where the pipe sits, which affects hangers, insulation, trench depth and labor. On remodels, read the demolition plans and the new work plans together, because each holds scope the other omits.
+
+## Use riser diagrams and isometrics for what plans omit
+
+A riser diagram is a schematic side view of vertical piping. It shows each stack with floor levels, pipe sizes at each floor, valves, cleanouts, offsets, branch connections and vent terminations. Its job is to show what is connected, not how long it is, so it is usually not drawn to scale and you should never scale it. To use one:
+
+1. Match each riser's label to the plan symbols on every floor.
+2. Read the size at each floor, because it changes as you move up or down.
+3. Count the valves, cleanouts and equipment connections shown at each level.
+4. Take heights from the architectural sections and offsets from the plans, not from the diagram.
+
+Isometrics show restrooms, mechanical rooms and complex stacks in three dimensions, with every elbow, tee, wye, reducer and valve visible, so they are the best source for fittings. Where none exists, count from the plan and carry a documented [fitting allowance](/guides/plumbing-pipe-waste-and-fitting-allowances) for the rest.
+
+## Check details, sections and the specifications
+
+Details add components the plan does not show. A water heater detail, for example, can show unions, isolation valves, an expansion tank, a relief valve and its discharge piping. Count those components from the detail, once per unit, and attach them to the heater on the plan. Enlarged plans of restrooms and equipment rooms also show more than the overall plan; when the two disagree, flag it and carry the conflict to your question list.
+
+Specifications decide what the pipe is made of and how it is installed. In current MasterFormat, plumbing is Division 22, and older sets use Division 15. Common sections are 22 07 00 plumbing insulation, 22 11 00 facility water distribution, 22 13 00 facility sanitary sewerage, 22 14 00 facility storm drainage and 22 40 00 plumbing fixtures. Section numbers shift between editions, so use the table of contents in your set.
+
+Read each section for materials by service and location, joining methods, valves, insulation, hangers and supports, testing and disinfection, identification and closeout requirements. Related work sits elsewhere: firestopping in Division 07, fire suppression in Division 21, earthwork in Division 31 and site utilities in Division 33.
+
+The governing code is whichever one the jurisdiction has adopted, with its amendments: usually the International Plumbing Code from [ICC](https://www.iccsafe.org/) or the Uniform Plumbing Code from [IAPMO](https://iapmo.org/), and the International Residential Code for detached one- and two-family dwellings and townhouses of up to three stories. A takeoff measures what the drawings show; it does not review the design for code compliance.
+
+<Cta title="We read the set so you do not have to" href="/services/plumbing-takeoff" label="See plumbing takeoff services">We measure by system, mark every quantity on the plans and log conflicts in a scope-gap log you can send as RFIs. Takeoffs start at $149, normally delivered in 24–72 hours.</Cta>

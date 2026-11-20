@@ -1,0 +1,14 @@
+/*
+ * Content page shell: the section bar's band on phones. The rest of the shell is the shared sections (PageHero,
+ * FactCard, PageJump, HowItWorks, RelatedLinks, FaqSection) and PriceBlock (price.module.css).
+ */
+
+/* ---------- the flow (section bar to FAQ): its top strip carries on the fact card's band, in the first block's tone,
+   so the bar never touches the office line, and under 1024px the static bar sits on that band ---------- */
+.flow {
+  padding-top: 24px;
+  background: #fff;
+}
+.flow.alt {
+  background: var(--color-alt);
+}

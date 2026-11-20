@@ -1,0 +1,208 @@
+/*
+ * Home page revamp, now site-wide. The JU Estimating design language, tuned for plumbing: pill buttons, kicker-led
+ * section heads, soft cards, amber icon tiles and check lists. Scoped to .hr, which <body> carries on every page (the
+ * home page root keeps its own .hr too). Rules that would also reach the header, footer or sticky bar are limited to
+ * <main>, so the site chrome looks as it did. Section layouts live in the CSS modules next to each component; only
+ * shared pieces belong here.
+ */
+@layer components {
+  /* ---------- shared sizes: one radius and card-title scale for every section module ---------- */
+  .hr {
+    --r-inner: 12px; /* panes inside a card: plan, workbook, bid cards */
+    --r-card: 20px; /* cards */
+    --r-panel: 24px; /* big framed panels: explorer panel, demo console, board, quote form */
+    --fs-card: 1.2rem; /* grid-card titles */
+    --fs-card-sm: 1.08rem; /* small card titles */
+    --fs-feature: 1.4rem; /* feature-card titles: fact card, FAQ help card */
+  }
+
+  /* ---------- buttons: pills, as on the JU Estimating site (page content only: the chrome keeps its corners) ---------- */
+  .hr main .btn,
+  main .hr .btn {
+    border-radius: 999px;
+  }
+
+  /* ---------- section head: kicker, h2, one-line intro ---------- */
+  .hr .sec-head h2 {
+    margin-bottom: 14px;
+  }
+  .hr .sec-head.center {
+    max-width: 860px;
+  }
+  /* No one-word last lines in intros, card copy and check lists (page content only, as for buttons). */
+  .hr main :is(p, li),
+  main .hr :is(p, li) {
+    text-wrap: pretty;
+  }
+
+  /* ---------- icon tile: amber tint on light, solid amber on dark ---------- */
+  .hr-tile {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--color-tint);
+    color: var(--color-amber-ink);
+  }
+  .tone-dark .hr-tile,
+  .pg-hero .hr-tile {
+    background: var(--color-amber);
+    color: var(--color-on-accent);
+  }
+  .hr-tile.sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  /* ---------- check list ---------- */
+  .hr-checks {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hr-checks li {
+    position: relative;
+    padding-left: 28px;
+  }
+  .hr-checks li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.3em;
+    width: 18px;
+    height: 18px;
+    background: var(--color-amber-ink);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>")
+      center / contain no-repeat;
+  }
+  .tone-dark .hr-checks li::before,
+  .pg-hero .hr-checks li::before {
+    background: var(--color-amber);
+  }
+
+  /* ---------- small pill badge (prices, units, facts) ---------- */
+  .hr-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--color-tint);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    color: var(--color-amber-ink);
+  }
+  .hr-badge.soft {
+    background: var(--color-alt);
+    color: var(--color-navy);
+  }
+  .tone-dark .hr-badge.soft {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+  }
+
+  /* ---------- soft card ---------- */
+  .hr-card {
+    position: relative;
+    border: 1px solid var(--color-line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(21 18 58 / 0.04);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .hr-card.lift:hover,
+  .hr-card.lift:focus-within {
+    transform: translateY(-3px);
+    border-color: #d5dbea;
+    box-shadow: var(--shadow-card);
+  }
+  .tone-dark .hr-card {
+    border-color: rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.05);
+    box-shadow: none;
+  }
+
+  /* ---------- scroll reveal: transform only, so nothing is ever hidden (screenshots, crawlers, no JS) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .hr-reveal {
+        animation: hr-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
+      }
+    }
+  }
+  @keyframes hr-rise {
+    from {
+      transform: translateY(28px);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  /* Windows high contrast: these states are drawn with backgrounds, which forced colors removes.
+     !important because the section modules are unlayered and would otherwise win. */
+  @media (forced-colors: active) {
+    .hr :is([role="tab"][aria-selected="true"], [aria-pressed="true"], [role="radiogroup"] label:has(input:checked)) {
+      forced-color-adjust: none;
+      background: Highlight !important;
+      color: HighlightText !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---------- home: closing quote band (builder F) ---------- */
+  /* Light touch only: the shared CtaBand keeps its markup; on the home page it picks up the soft radii, the
+     hero-style glow and the same check marks as the rest of the page. */
+  .hr .cta-band {
+    background-image:
+      radial-gradient(760px 380px at 90% 0%, rgb(43 39 102 / 0.9), transparent 65%),
+      linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size:
+      auto,
+      44px 44px,
+      44px 44px;
+  }
+  /* Two columns: the promise sits level with the middle of the form instead of leaving a gap under it. */
+  @media (min-width: 960px) {
+    .hr .cta-band .cta-grid {
+      align-items: center;
+    }
+  }
+  .hr .cta-band .form-card {
+    border-radius: 24px;
+  }
+  .hr .cta-band :is(.input, .select, .textarea) {
+    border-radius: 12px;
+  }
+  .hr .cta-band .cta-points li::before {
+    content: "";
+    top: 0.3em;
+    width: 18px;
+    height: 18px;
+    background: var(--color-amber);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>")
+      center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>")
+      center / contain no-repeat;
+  }
+  .hr .cta-band .cta-contact a:not(.btn) svg {
+    color: var(--color-amber);
+  }
+  /* ---------- end home: closing quote band (builder F) ---------- */
+}

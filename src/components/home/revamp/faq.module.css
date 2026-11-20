@@ -1,0 +1,282 @@
+/* Home FAQ: heading and the "Still have questions?" card on the left, numbered accordion cards on the right. */
+
+.layout {
+  display: grid;
+  gap: 32px;
+}
+.head :global(.sec-head) {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "head qa"
+      "help qa";
+    gap: 36px clamp(48px, 6vw, 88px);
+    align-items: start;
+  }
+  .head {
+    grid-area: head;
+  }
+  .qa {
+    grid-area: qa;
+  }
+  /* A grid item's sticky range is its own grid area, so the card rides along until the last question. */
+  .help {
+    grid-area: help;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+  }
+}
+
+/* ---------- accordion cards ---------- */
+.list {
+  display: grid;
+  gap: 14px;
+  /* lets ::details-content animate to height: auto (Chromium); other browsers open instantly */
+  interpolate-size: allow-keywords;
+}
+.item {
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  background: #fff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.item[open] {
+  border-color: var(--color-amber);
+  box-shadow: 0 14px 34px rgb(138 90 0 / 0.1);
+}
+.item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition-property: block-size, content-visibility;
+  transition-duration: 0.28s;
+  transition-timing-function: ease;
+  transition-behavior: allow-discrete;
+}
+.item[open]::details-content {
+  block-size: auto;
+}
+
+.sum {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px 20px 28px;
+  /* the focus ring follows the card's corners */
+  border-radius: 19px;
+  list-style: none;
+  cursor: pointer;
+}
+.sum::-webkit-details-marker {
+  display: none;
+}
+.num {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+}
+.q {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+.icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  color: var(--color-navy);
+  transition:
+    transform 0.25s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.item[open] .icon {
+  transform: rotate(45deg);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+@media (hover: hover) {
+  .item:not([open]):hover {
+    box-shadow: var(--shadow-card);
+  }
+  .item:not([open]):hover .icon {
+    background: var(--color-tint);
+    color: var(--color-amber-ink);
+  }
+}
+
+.a {
+  /* answers line up under the question text */
+  padding: 0 28px 24px calc(28px + 2.4rem + 14px);
+  color: var(--color-mut);
+}
+.a p {
+  max-width: 68ch;
+  margin: 0 0 0.8em;
+}
+.a p:last-child {
+  margin-bottom: 0;
+}
+.a a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.reviewed {
+  margin: 22px 0 0;
+  font-size: 0.9rem;
+  color: var(--color-mut);
+}
+
+@media (max-width: 639px) {
+  .sum {
+    grid-template-columns: 1.9rem minmax(0, 1fr) 34px;
+    gap: 10px;
+    padding: 16px 14px 16px 18px;
+  }
+  .q {
+    font-size: 1rem;
+  }
+  .icon {
+    width: 34px;
+    height: 34px;
+  }
+  .a {
+    padding: 0 18px 20px;
+  }
+}
+
+/* ---------- "Still have questions?" card ---------- */
+.help {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+.card {
+  width: 100%;
+  padding: clamp(22px, 2.4vw, 32px);
+  border-radius: 20px;
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(420px 240px at 100% 0%, rgb(255 255 255 / 0.09), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px,
+    22px 22px;
+  box-shadow: var(--shadow-pop);
+}
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-feature);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.cardText {
+  margin: 4px 0 0;
+  font-size: 0.97rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: var(--color-onnavy);
+}
+.contact {
+  display: grid;
+  gap: 2px;
+  margin: 20px 0 22px;
+  padding: 16px 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  list-style: none;
+  font-size: 0.97rem;
+}
+.contact li,
+.contact a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  min-width: 0;
+}
+.contact li {
+  color: var(--color-onnavy);
+}
+.contact a {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.contact a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-underline-offset: 4px;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-amber);
+}
+
+/* Tablet: the card spans the full width, so the contact rows sit beside the greeting instead of under it. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "top contact"
+      "btn contact";
+    align-items: start;
+    column-gap: 36px;
+  }
+  .cardTop {
+    grid-area: top;
+  }
+  .contact {
+    grid-area: contact;
+    margin: 0;
+    padding: 0 0 0 32px;
+    border-top: 0;
+    border-left: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .card > :global(.btn) {
+    grid-area: btn;
+    justify-self: start;
+    margin-top: 20px;
+  }
+}

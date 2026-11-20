@@ -1,0 +1,327 @@
+/*
+ * "What moves the price": HoverTabs (vertical, dark) whose panels pair a small mock on plan paper with the content
+ * text, then the "what doesn't" strip and the quote. The mocks are HTML and CSS only (no drawings), aria-hidden apart
+ * from their text labels.
+ */
+
+/* ---------- panel: mock beside the text when the card is wide enough (HoverTabs' panels are a container) ---------- */
+.driver {
+  display: grid;
+  gap: 20px;
+}
+@container (min-width: 640px) {
+  .driver {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 32px;
+  }
+}
+.fig {
+  margin: 0;
+}
+.fig figcaption {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--color-onnavy-mut);
+}
+.mock {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 18px;
+  min-height: 260px;
+  padding: 22px;
+  border-radius: var(--r-inner);
+  background-color: #f4f6fb;
+  background-image:
+    linear-gradient(rgb(31 27 80 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(31 27 80 / 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--color-ink);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+.title {
+  margin: 0 0 10px;
+  font: 800 1.3rem/1.25 var(--font-display);
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.body {
+  margin: 0;
+  color: var(--color-onnavy);
+}
+
+/* ---------- 1: sheet count, a fan of mini sheets ---------- */
+.fan {
+  display: grid;
+  grid-template-columns: repeat(3, 76px);
+  gap: 12px 14px;
+}
+.mini {
+  position: relative;
+  height: 56px;
+  padding: 5px 7px;
+  border: 1px solid #c8d0e0;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgb(21 18 58 / 0.08);
+  font: 800 0.66rem/1 var(--font-display);
+  letter-spacing: 0.02em;
+  color: var(--color-mut);
+  opacity: 0.6;
+}
+.mini:nth-child(odd) {
+  transform: rotate(-3deg);
+}
+.mini:nth-child(even) {
+  transform: rotate(2deg) translateY(4px);
+}
+/* title block in the corner */
+.mini::after {
+  content: "";
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 20px;
+  height: 9px;
+  border: 1px solid #c8d0e0;
+}
+.mini[data-ours] {
+  border: 2px solid var(--color-amber);
+  color: var(--color-navy);
+  opacity: 1;
+}
+/* three short runs inside a plumbing sheet: cold, hot, waste */
+.mini[data-ours]::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 21px;
+  width: 34px;
+  height: 16px;
+  background:
+    linear-gradient(var(--color-cold), var(--color-cold)) 0 0 / 100% 2px no-repeat,
+    linear-gradient(var(--color-hot), var(--color-hot)) 0 6px / 72% 2px no-repeat,
+    linear-gradient(var(--color-waste), var(--color-waste)) 0 12px / 88% 3px no-repeat;
+}
+.legend {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.key {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #c8d0e0;
+  border-radius: 3px;
+  background: #fff;
+}
+.key[data-ours] {
+  border: 2px solid var(--color-amber);
+}
+
+/* ---------- 2: systems in scope, 3 lit of 8, then all 8 ---------- */
+.rows {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 340px);
+}
+/* each scope on its own scrap of sheet: the systems it carries, then the file they fill */
+.sysRow {
+  display: grid;
+  grid-template-columns: 4.8rem minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  padding: 14px 16px;
+  border: 1px solid #c8d0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+.sysLabel {
+  font-weight: 800;
+  color: var(--color-navy);
+}
+.sysLines {
+  display: flex;
+  gap: 6px;
+}
+.sysLines i {
+  flex: 1 1 0;
+  max-width: 22px;
+  height: 5px;
+}
+.sysLines i[data-off] {
+  opacity: 0.18;
+}
+/* the file this scope fills: about twice as long with every system */
+.file {
+  grid-column: 2;
+  width: calc(var(--w) * 100%);
+  height: 14px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, var(--color-navy) 0 16px, rgb(31 27 80 / 0.55) 16px 18px);
+}
+
+/* ---------- 3: schedule-heavy or plan-heavy ---------- */
+.sets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 400px;
+}
+.set {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #c8d0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+.rooms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  aspect-ratio: 168 / 96;
+}
+/* identical rooms, one fixture each */
+.rooms i {
+  border: 1.5px solid #9aa3bd;
+  border-radius: 2px;
+  background: radial-gradient(circle, transparent 0 4px, var(--color-navy) 4.5px 6px, transparent 6.5px) 70% 60% / 100% 100% no-repeat;
+}
+.plate {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.setLabel {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+/* ---------- 4: deadline, a working week with the bid date pinned ---------- */
+.week {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: auto 38px 38px;
+  gap: 8px 0;
+  width: 100%;
+  max-width: 420px;
+}
+.day {
+  padding-bottom: 6px;
+  border-bottom: 1px solid #c8d0e0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.band {
+  grid-column: 1 / 4;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.band[data-k="std"] {
+  grid-row: 2;
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+/* rush has no fixed length: a dashed band that fades out, with its label running past it */
+.band[data-k="rush"] {
+  grid-row: 3;
+  grid-column: 1 / 3;
+  border: 2px dashed var(--color-amber-ink);
+  border-right-color: transparent;
+  color: var(--color-amber-ink);
+}
+.pin {
+  grid-column: 5;
+  grid-row: 2 / 4;
+  position: relative;
+  display: grid;
+  align-content: end;
+  justify-items: center;
+  padding-bottom: 2px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--color-navy);
+}
+.pin::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  bottom: 22px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-navy);
+}
+.pin::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--color-hot);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+/* ---------- under the explorer: what does not move the price, and the quote ---------- */
+.after {
+  display: grid;
+  gap: 18px;
+  margin-top: clamp(24px, 3vw, 36px);
+}
+.strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: var(--r-card);
+  background: rgb(255 255 255 / 0.06);
+  color: var(--color-onnavy);
+}
+.strip strong {
+  color: #fff;
+}
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 28px;
+}
+.cta p {
+  flex: 1 1 32ch;
+  margin: 0;
+  color: var(--color-onnavy);
+}
+@media (max-width: 560px) {
+  .cta :global(.btn) {
+    flex: 1 1 100%;
+  }
+}

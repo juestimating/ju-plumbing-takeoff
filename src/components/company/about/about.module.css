@@ -1,0 +1,815 @@
+/*
+ * /about in the home language: the desk card in the hero (marked-up plan, inspection stamp), the "behind the brand"
+ * prose beside a navy fact card, the working-rules explorer on navy with a proof mock per rule, the standards table
+ * as a drawing's title block, and the offices with a navy hours card. Shared pieces (.hr-card, .hr-tile, .hr-badge,
+ * .swatch, .btn) come from the global styles. Motion is short and none of it runs under reduced motion.
+ */
+
+/* ---------- hero: the desk card ---------- */
+.desk {
+  overflow: hidden;
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow:
+    0 30px 70px -28px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+/* a size container, so the stamp scales with the drawing and keeps to the same spot on it */
+.deskSheet {
+  position: relative;
+  container-type: inline-size;
+}
+/* the drawing edge to edge on the card (the figure's own frame and corners off) */
+.deskFig {
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 0;
+}
+/* An inspector's stamp: double amber ring, rotated, over the legend corner of the sheet (above the caption strip). */
+/* Over the gap between the drawing's legend and its fixture count box: centered on drawing x 558, y 300 (of 640 x
+   400), above the 32px caption strip. */
+.stamp {
+  position: absolute;
+  right: 6cqi;
+  bottom: calc(32px + 8.9cqi);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  width: clamp(62px, 13.5cqi, 92px);
+  aspect-ratio: 1;
+  padding: 0 10px;
+  border: 2px solid var(--color-amber);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.9);
+  box-shadow:
+    inset 0 0 0 4px rgb(255 255 255 / 0.9),
+    inset 0 0 0 5px color-mix(in srgb, var(--color-amber) 70%, transparent),
+    0 6px 16px -8px rgb(21 18 58 / 0.4);
+  color: var(--color-amber-ink);
+  text-align: center;
+  transform: rotate(-8deg);
+  transition: transform 0.2s ease;
+}
+.stamp b {
+  font: 800 clamp(0.72rem, 2.25cqi, 0.95rem) / 1 var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.stamp small {
+  margin-top: 4px;
+  font-size: clamp(0.56rem, 1.65cqi, 0.7rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.desk:hover .stamp {
+  transform: rotate(-8deg) translateY(-2px);
+}
+.deskBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 16px clamp(18px, 2.2vw, 26px) 20px;
+  list-style: none;
+}
+.deskBadge svg {
+  color: var(--color-amber-ink);
+}
+/* Phones: the drawing is too small to stamp, so the stamp sits beside the two promises under it. */
+@media (max-width: 639px) {
+  .desk {
+    position: relative;
+  }
+  .deskSheet {
+    position: static;
+  }
+  .stamp {
+    right: 16px;
+    bottom: 14px;
+    width: 72px;
+    height: 72px;
+    padding: 0 6px;
+  }
+  .stamp b {
+    font-size: 0.8rem;
+  }
+  .stamp small {
+    font-size: 0.6rem;
+  }
+  .deskBadges {
+    min-height: 100px;
+    padding-right: 104px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* the plan's pipe runs trace themselves once, then the stamp comes down (every run is under 1400 units) */
+  .deskFig svg path[fill="none"]:is([stroke-width="3.5"], [stroke-width="4"], [stroke-width="4.5"], [stroke-width="5"], [stroke-width="7"]):not([stroke-dasharray]) {
+    stroke-dasharray: 1400;
+    animation: trace 1.6s cubic-bezier(0.3, 0, 0.2, 1) 0.15s backwards;
+  }
+  .deskSheet .stamp {
+    animation: stamp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s backwards;
+  }
+}
+@keyframes trace {
+  from {
+    stroke-dashoffset: 1400;
+  }
+}
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.4);
+  }
+}
+
+/* ---------- behind the brand: prose beside a navy fact card ---------- */
+.deskGrid {
+  display: grid;
+  gap: 32px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .deskGrid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+    column-gap: clamp(40px, 5vw, 80px);
+  }
+}
+.deskCopy p {
+  font-size: 1.06rem;
+}
+.deskCopy p:last-child {
+  margin-bottom: 0;
+}
+.deskFacts {
+  display: grid;
+  margin: 0;
+  padding: 10px clamp(22px, 2.4vw, 32px);
+  border-radius: var(--r-card, 20px);
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(420px 240px at 100% 0%, rgb(255 255 255 / 0.09), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px,
+    22px 22px;
+  box-shadow: var(--shadow-pop);
+  list-style: none;
+}
+.deskFacts li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 84px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #fff;
+}
+.deskFacts li + li {
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+.deskLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #fff;
+  text-decoration: none;
+}
+.deskLink svg {
+  flex: none;
+  color: var(--color-amber);
+  transition: transform 0.2s ease;
+}
+.deskLink:hover {
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 4px;
+}
+.deskLink:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---------- how we work: the rule explorer (HoverTabs, dark) ---------- */
+/* the ask reads as the section intro, centered under the h2 */
+.rules > p:first-child {
+  text-align: center;
+  font-size: 1.05rem;
+}
+.rule {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+.ruleTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font: 800 clamp(1.2rem, 1rem + 1.2cqi, 1.45rem) / 1.25 var(--font-display);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  color: #fff;
+}
+.ruleBody {
+  max-width: 66ch;
+  margin: 14px 0 0;
+  font-size: 1.02rem;
+  color: var(--color-onnavy);
+}
+.mock {
+  margin-top: auto;
+}
+.mockPane {
+  position: relative;
+  display: grid;
+  align-content: center;
+  min-height: 200px;
+  padding: 18px 20px;
+  border-radius: var(--r-inner, 12px);
+  background: #fff;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+.mockCap {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-onnavy-mut);
+}
+/* A narrow panel (chip row above it) shows the mock first, the rule under it. */
+@container (max-width: 559px) {
+  .mock {
+    order: -1;
+    margin-top: 0;
+  }
+  .mockPane {
+    min-height: 0;
+    padding: 14px;
+  }
+}
+
+/* mock parts */
+.mockTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+}
+.mockTitle svg {
+  color: var(--color-amber-ink);
+}
+.mockNote {
+  margin: 0;
+  color: var(--color-mut);
+}
+.mockFoot {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--color-mut);
+}
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+/* the sheet chip from the home demo */
+.src {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--color-tint);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--color-amber-ink);
+}
+
+/* 1: workbook lines */
+.mockHead,
+.mockRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 3.6rem;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 10px;
+}
+.mockHead {
+  padding-block: 2px 8px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.mockHead > :last-child,
+.qty {
+  text-align: right;
+}
+.mockRow + .mockRow {
+  border-top: 1px dashed var(--color-line);
+}
+.mockRow[data-on] {
+  border-radius: 6px;
+  background: var(--color-tint);
+  box-shadow: inset 4px 0 var(--color-amber);
+}
+.mockRow[data-on] .src {
+  background: #fff;
+}
+.mockLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+.qty {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 2: the review, signed off */
+.mockReview {
+  position: relative;
+  min-height: 92px;
+  padding-right: 104px;
+}
+.ticks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.ticks span {
+  position: relative;
+  padding-left: 26px;
+}
+.ticks span::before {
+  content: "";
+  position: absolute;
+  top: 0.15em;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  background: var(--color-amber-ink);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>") center / contain no-repeat;
+}
+.stampSm {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  width: 84px;
+  height: 84px;
+  margin-top: -42px;
+}
+
+/* 3: the scope-gap log */
+.gapList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gapList li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 8px 10px;
+  border: 1px dashed #c8d0e0;
+  border-radius: 8px;
+}
+.rfi {
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--color-navy);
+}
+@container (max-width: 479px) {
+  .gapList li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .rfi {
+    grid-column: 2;
+  }
+}
+
+/* 4: two typical ranges around the number (illustrative, not to scale) */
+.ranges {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0 0;
+}
+.range {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  color: var(--color-mut);
+}
+.range b {
+  color: var(--color-navy);
+}
+.bar {
+  position: relative;
+  height: 14px;
+  background: linear-gradient(var(--color-line), var(--color-line)) center / 100% 2px no-repeat;
+}
+.bar::before,
+.bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+}
+.bar::before {
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+}
+.range[data-kind="tight"] .bar::before {
+  width: 26%;
+  margin-left: -13%;
+  background: var(--color-amber);
+}
+.range[data-kind="wide"] .bar::before {
+  width: 72%;
+  margin-left: -36%;
+  border: 2px solid var(--color-navy);
+  background: #fff;
+}
+.bar::after {
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-navy);
+}
+
+/* 5: ZIP code pricing, and the takeoff that carries none */
+.mockSplit {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed #c8d0e0;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+/* 6: the NDA sheet, with a second sheet behind it */
+.mockNda {
+  padding: 14px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow:
+    6px 6px 0 -1px #fff,
+    6px 6px 0 0 var(--color-line);
+}
+.ndaLines {
+  display: block;
+  height: 30px;
+  margin-top: 10px;
+  background: repeating-linear-gradient(transparent 0 9px, #dfe4ef 9px 10px);
+}
+
+/* ---------- standards and software: a drawing's title block ---------- */
+.titleBlock {
+  overflow: hidden;
+  border: 2px solid var(--color-navy);
+  border-radius: 6px;
+  background: #fff;
+}
+.tb {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tb caption {
+  padding: 14px 20px;
+  border-bottom: 2px solid var(--color-navy);
+  caption-side: top;
+  text-align: left;
+  font: 800 1.02rem/1.35 var(--font-display);
+  color: var(--color-navy);
+}
+.tb thead th {
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--color-navy);
+  background: var(--color-alt);
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.tb tbody th,
+.tb tbody td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #c8d0e0;
+  text-align: left;
+  vertical-align: top;
+}
+.tb tbody tr:last-child > * {
+  border-bottom: 0;
+}
+/* field names, as on a title block */
+.tb tbody th {
+  width: 30%;
+  padding-top: 19px;
+  border-right: 1px solid #c8d0e0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.tb tbody td {
+  font-size: 0.98rem;
+  color: var(--color-ink);
+}
+.tb a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+@media (max-width: 719px) {
+  .tb thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .tb tbody tr,
+  .tb tbody th,
+  .tb tbody td {
+    display: block;
+  }
+  .tb tbody tr + tr {
+    border-top: 1px solid #c8d0e0;
+  }
+  .tb tbody th {
+    width: auto;
+    padding: 14px 16px 4px;
+    border: 0;
+  }
+  .tb tbody td {
+    padding: 0 16px 14px;
+    border: 0;
+  }
+  .tb caption {
+    padding: 12px 16px;
+  }
+}
+
+/* ---------- offices and hours ---------- */
+.offices {
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 720px) {
+  .offices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hours {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1100px) {
+  .offices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .hours {
+    grid-column: auto;
+  }
+  /* beside the taller hours card, an office card keeps its own height: no blank band inside it */
+  .office {
+    align-self: start;
+  }
+}
+.office {
+  --pad: clamp(22px, 2.4vw, 30px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: var(--pad);
+}
+/* Site-plan scrap across the card top: paper grid, the street with the water main, the service line up to the
+   building, the pin on the building. The two offices sit on different lots (--x). */
+.plot {
+  --x: 36%;
+  position: relative;
+  align-self: stretch;
+  height: 124px;
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) 4px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 19px 19px 0 0;
+  background:
+    linear-gradient(var(--color-cold), var(--color-cold)) 0 97px / 100% 4px no-repeat,
+    linear-gradient(#d5dbea, #d5dbea) 0 84px / 100% 1px no-repeat,
+    linear-gradient(#d5dbea, #d5dbea) 0 113px / 100% 1px no-repeat,
+    linear-gradient(#fff, #fff) 0 84px / 100% 30px no-repeat,
+    linear-gradient(rgb(31 27 80 / 0.06) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(90deg, rgb(31 27 80 / 0.06) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--color-alt);
+}
+.office:nth-child(2) .plot {
+  --x: 64%;
+}
+/* the building outline and its service line */
+.plot::before,
+.plot::after {
+  content: "";
+  position: absolute;
+  left: var(--x);
+}
+.plot::before {
+  top: 16px;
+  width: 88px;
+  height: 52px;
+  margin-left: -44px;
+  border: 2px solid var(--color-navy);
+  border-radius: 3px;
+  background: #fff;
+}
+.plot::after {
+  top: 68px;
+  width: 3px;
+  height: 31px;
+  margin-left: -1.5px;
+  background: var(--color-cold);
+}
+.pin {
+  position: absolute;
+  top: 22px;
+  left: var(--x);
+  margin-left: -20px;
+  transition: transform 0.2s ease;
+}
+.office:hover .pin {
+  transform: translateY(-3px);
+}
+/* the role is the card's heading, drawn as the soft badge */
+.role {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+}
+.addr {
+  margin: 0;
+  font-size: 1.1rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-navy);
+}
+.directions svg {
+  color: var(--color-amber-ink);
+  transition: transform 0.2s ease;
+}
+.directions:hover svg {
+  transform: translateX(3px);
+}
+
+/* the navy hours card (the home help card look) */
+.hours {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(22px, 2.4vw, 30px);
+  border-radius: var(--r-card, 20px);
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(420px 240px at 100% 0%, rgb(255 255 255 / 0.09), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px,
+    22px 22px;
+  box-shadow: var(--shadow-pop);
+}
+.hoursTitle {
+  margin: 0;
+  font-size: var(--fs-feature, 1.4rem);
+  font-weight: 800;
+  line-height: 1.25;
+}
+.rows {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  list-style: none;
+  font-size: 0.97rem;
+}
+.rows li,
+.rows a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  min-height: 44px;
+}
+.rows li {
+  color: var(--color-onnavy);
+}
+.rows strong {
+  font-weight: 700;
+  color: #fff;
+}
+.rows a {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.rows a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-underline-offset: 4px;
+}
+.hoursNote {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-onnavy-mut);
+}
+.open {
+  margin-top: 8px;
+}
+.book {
+  margin-top: 16px;
+}
+/* contact icons as CSS masks (no SVG markup per row), as on the help card */
+.ic {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.08);
+}
+.ic::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 17px;
+  height: 17px;
+  margin: auto;
+  background: var(--color-amber);
+  -webkit-mask: var(--m) center / contain no-repeat;
+  mask: var(--m) center / contain no-repeat;
+}
+.ic[data-i="phone"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384'/></svg>");
+}
+.ic[data-i="mail"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7'/><rect x='2' y='4' width='20' height='16' rx='2'/></svg>");
+}
+.ic[data-i="clock"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>");
+}
+
+@media (forced-colors: active) {
+  .ic::before,
+  .ticks span::before {
+    background: CanvasText;
+  }
+  .mockRow[data-on] {
+    outline: 2px solid Highlight;
+  }
+}

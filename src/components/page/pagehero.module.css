@@ -1,0 +1,531 @@
+/*
+ * Inner page hero in the home hero language (home/revamp/hero.module.css): navy drafting grid, a warm glow behind the
+ * card, the home grid and type, an optional drafting backdrop in the page's system colors, the link switcher, the
+ * clock note and the white showcase card (HeroCard). Global pieces: .pg-hero, .kicker, .lead, .hero-cta, .hero-note,
+ * .btn, .hr-badge, .hr-checks. Motion is CSS only and short, and none of it runs under reduced motion.
+ */
+
+/* ---------- surface ---------- */
+.hero {
+  --glow: none;
+  overflow-x: clip;
+  padding-block: clamp(36px, 4.5vw, 64px) clamp(48px, 6vw, 80px);
+  background-color: var(--color-navy-d);
+  background-image:
+    var(--glow),
+    radial-gradient(1000px 620px at 0% 0%, color-mix(in srgb, var(--color-navy-2) 85%, transparent), transparent 72%),
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    176px 176px,
+    176px 176px,
+    44px 44px,
+    44px 44px;
+}
+.glow {
+  --glow: radial-gradient(620px 460px at 77% 50%, color-mix(in srgb, var(--color-amber) 11%, transparent), transparent 70%);
+}
+/* Room for the fact card's overlap (same clamp as fact-card.module.css), also when a FactCard simply follows. */
+.overlap,
+.hero:has(+ [data-overlap]) {
+  padding-bottom: calc(clamp(44px, 4.5vw, 64px) + clamp(44px, 4vw, 58px));
+}
+.slim {
+  padding-block: clamp(32px, 4vw, 56px);
+}
+.inner {
+  position: relative;
+}
+
+/* ---------- drafting backdrop (decorative, aria-hidden; 1:1 and centered like the container) ---------- */
+.art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.art svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1440px;
+  max-width: none;
+  height: 820px;
+  margin-left: -720px;
+  overflow: visible;
+}
+.art text {
+  font-family: var(--font-display);
+}
+@media (max-width: 1023px) {
+  .wide {
+    display: none;
+  }
+}
+
+/* ---------- layout: copy left, card right (desktop); copy, switcher, buttons, card (phones and tablets) ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.stage {
+  position: relative;
+  margin-top: 36px;
+}
+/* cardFirstOnPhone: the card sits before the buttons in the source, for phones; tablets put the buttons first again */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid[data-first] .actions {
+    order: 1;
+  }
+  .grid[data-first] .stage {
+    order: 2;
+  }
+}
+/* The copy keeps to the card's top edge when the card is the taller column (the last row takes the slack), and the
+   card centres against the copy when the copy is taller, so the buttons and the note stay on the first screen. */
+@media (min-width: 1024px) {
+  .grid[data-card] {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas: "intro card" "pick card" "actions card" ". card";
+    column-gap: clamp(40px, 4.4vw, 72px);
+  }
+  .grid[data-card] .intro {
+    grid-area: intro;
+  }
+  .grid[data-card] .pick {
+    grid-area: pick;
+  }
+  .grid[data-card] .actions {
+    grid-area: actions;
+  }
+  .stage {
+    grid-area: card;
+    align-self: center;
+    margin-top: 0;
+  }
+}
+
+/* ---------- copy ---------- */
+/* The kicker wraps on phones: balanced lines, with its rule on the first one. */
+.kicker {
+  align-items: flex-start;
+  text-wrap: balance;
+}
+.kicker::before {
+  flex: none;
+  margin-top: calc(0.825em - 1px);
+}
+.kicker[data-c]::before {
+  background: var(--c);
+}
+.h1 {
+  max-width: 13em;
+  margin-bottom: 20px;
+  font-size: clamp(2.15rem, 1.2rem + 3.2vw, 3.6rem);
+  line-height: 1.06;
+}
+.slim .h1 {
+  font-size: clamp(2rem, 3.6vw, 3rem);
+}
+/* a long headline beside the card: a size that keeps it to three lines */
+@media (min-width: 1024px) {
+  .grid[data-card] .h1[data-long] {
+    max-width: none;
+    font-size: clamp(2.3rem, 3.3vw, 3rem);
+  }
+}
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.note svg {
+  flex: none;
+  margin-top: 0.22em;
+  color: var(--color-amber);
+}
+/* when the note needs two lines, it breaks between the sentences */
+.sentence {
+  display: inline-block;
+}
+/* price and turnaround above the buttons while the card (which carries them from 1024px) is further down */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 0;
+}
+.badges + :global(.hero-cta) {
+  margin-top: 16px;
+}
+.badges :global(.hr-badge.soft) {
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+.badges svg {
+  color: var(--color-amber);
+}
+@media (min-width: 1024px) {
+  .grid[data-card] .badges {
+    display: none;
+  }
+}
+/* Phones: the badges join the grid right after the lead, above the switcher, so the fixed call bar never covers them
+   (nothing in the row takes focus, so the tab order is unchanged). */
+@media (max-width: 639px) {
+  .actions:has(> .badges) {
+    display: contents;
+  }
+  .intro,
+  .badges {
+    order: -1;
+  }
+  .pick ~ .actions .badges + :global(.hero-cta) {
+    margin-top: 28px;
+  }
+}
+
+/* ---------- switcher: sibling pages as chips (links) ---------- */
+.pick {
+  margin-top: 26px;
+}
+.ask {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-onnavy);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 20px 0 16px;
+  border: 1.5px solid rgb(255 255 255 / 0.24);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+  font: 700 0.98rem/1.2 var(--font-sans);
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.chip svg {
+  flex: none;
+  color: var(--color-amber);
+}
+.chip:hover {
+  border-color: var(--color-amber);
+  background: rgb(255 255 255 / 0.11);
+}
+.chip[aria-current="page"] {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+.chip[aria-current="page"] svg {
+  color: currentColor;
+}
+/* Beside the card the chips keep to one row where they fit, else an even grid (as the home's 2 x 2), so the buttons
+   and the note stay on the first screen. Five chips drop their icons from 1024px, four only where one row needs it. */
+@media (min-width: 1024px) {
+  .pick[data-many] .chip {
+    justify-content: center;
+    padding-inline: 18px;
+  }
+  .pick[data-many] .chip svg {
+    display: none;
+  }
+}
+@media (min-width: 1280px) and (max-width: 1365px) {
+  .chip {
+    padding-inline: 18px;
+  }
+  .chip svg {
+    display: none;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  /* four chips make an even 2 x 2; three already fit one row */
+  .chips:has(> li:nth-child(4):last-child) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    max-width: 480px;
+  }
+  .chip {
+    justify-content: center;
+    padding-inline: 12px;
+  }
+  .pick[data-many] .chips {
+    display: flex;
+    max-width: none;
+  }
+  .pick[data-many] .chip {
+    padding-inline: 12px;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1099px) {
+  .pick[data-many] .chips {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Phones: one row that scrolls sideways, bleeding to the screen edges (like the home explorer chips), faded at an
+   edge while more chips hide past it: the right at the start, both in the middle, the left at the end. */
+@property --fade-l {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fade-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 28px;
+}
+@media (max-width: 639px) {
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 4px var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+    mask: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  }
+  @supports (animation-timeline: scroll()) {
+    .chips {
+      animation: edge-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+  .chips li {
+    flex: none;
+  }
+  /* the row opens scrolled to the current page's chip (the row only, never the page; ignored where unsupported) */
+  .chip[aria-current="page"] {
+    scroll-initial-target: nearest;
+    scroll-snap-align: center;
+  }
+  /* inset ring: the row's overflow would clip an outer one */
+  .chip:focus-visible {
+    outline-offset: -4px;
+  }
+}
+@keyframes edge-fade {
+  0% {
+    --fade-l: 0px;
+    --fade-r: 28px;
+  }
+  12%,
+  88% {
+    --fade-l: 28px;
+    --fade-r: 28px;
+  }
+  100% {
+    --fade-l: 28px;
+    --fade-r: 0px;
+  }
+}
+@media (forced-colors: active) {
+  .chip[aria-current="page"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ---------- card stage: a second sheet peeks out behind the card, a plan set rather than a single page ---------- */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 18px -12px -14px 18px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.05);
+  transform: rotate(1.6deg);
+}
+.stage > * {
+  position: relative;
+}
+
+/* ---------- HeroCard: the home showcase card ---------- */
+.heroCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow:
+    0 30px 70px -28px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+/* Navy ring and navy outline buttons on the white card (the hero's amber ring and white outline would vanish). */
+.heroCard :focus-visible {
+  outline-color: var(--color-navy-2);
+}
+.heroCard :global(.btn-outline) {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+/* the card's top: the drawing on its paper, edge to edge (DrawingFigure's own frame and corners off) */
+.figure {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 0;
+  background: var(--color-alt);
+}
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 26px 24px;
+}
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.title {
+  margin: 0;
+  font: 800 1.4rem/1.2 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--color-navy);
+}
+/* price and turnaround share the title's row where it is wide enough, else they wrap under the title */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+/* an amber badge, not the old 2.6rem figure that .hero-card .price still sets globally */
+.price {
+  margin: 0;
+  padding: 6px 13px;
+  font: 800 0.92rem/1.3 var(--font-sans);
+  letter-spacing: 0;
+  color: var(--color-amber-ink);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-mut);
+}
+.checks {
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.97rem;
+}
+.checks li::before {
+  background: var(--color-amber-ink);
+}
+.explore {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: auto;
+  padding-top: 10px;
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: none;
+}
+.explore svg {
+  color: var(--color-amber-ink);
+  transition: transform 0.2s ease;
+}
+.explore:hover {
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 4px;
+}
+.explore:hover svg {
+  transform: translateX(3px);
+}
+/* Tablets: drawing beside the text, so the card is not taller than the screen. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .heroCard[data-media] {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+  .heroCard[data-media] .figure {
+    align-self: center;
+    border-right: 1px solid var(--color-line);
+    border-bottom: 0;
+  }
+}
+@media (max-width: 639px) {
+  .body {
+    padding: 18px 20px 22px;
+  }
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+/* ---------- motion (off under reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* backdrop risers draw in once on load (each has pathLength="1"), the dashed ones and the fittings fade in */
+  .draw {
+    --len: 1;
+    stroke-dasharray: 1;
+    animation: dash 2.2s cubic-bezier(0.45, 0.05, 0.25, 1) calc(0.2s + var(--i, 0) * 0.25s) backwards;
+  }
+  .fade {
+    animation: fade 1.2s ease 1s backwards;
+  }
+  /* the card drawing's pipe runs trace themselves once, like a takeoff being marked up (every run is under 1400 units) */
+  .figure svg path[fill="none"]:is([stroke-width="3.5"], [stroke-width="4"], [stroke-width="4.5"], [stroke-width="5"], [stroke-width="7"]):not([stroke-dasharray]) {
+    --len: 1400;
+    stroke-dasharray: 1400;
+    animation: dash 1.6s cubic-bezier(0.3, 0, 0.2, 1) 0.15s backwards;
+  }
+}
+@keyframes dash {
+  from {
+    stroke-dashoffset: var(--len);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

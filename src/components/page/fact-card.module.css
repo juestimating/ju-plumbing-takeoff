@@ -1,0 +1,199 @@
+/*
+ * Floating fact card (the home StatCard look): a white card that rides over the bottom of the hero, on a band in the
+ * color of the section that follows. Facts with a value (count-ups, "24–72") go in a row from 720px with the title
+ * column on the left from 1280px, as on the home. Text-only facts (the five proof items) need more room: three columns
+ * from 720px, one row from 1280px, with the title above them.
+ */
+
+/* flow-root keeps the card's negative margin inside this band, so the band's background starts at the hero's edge */
+.band {
+  position: relative;
+  z-index: 1;
+  display: flow-root;
+  background: var(--color-alt);
+}
+.band[data-tone="light"] {
+  background: #fff;
+}
+.band[data-tone="dark"] {
+  background: var(--color-navy);
+}
+.band:not([data-overlap]) {
+  padding-top: clamp(28px, 4vw, 44px);
+}
+/* a light band expects a same-tone section next; before a navy one, keep the card off its edge */
+.band:not([data-tone="dark"]):has(+ :global(.tone-dark)) {
+  padding-bottom: clamp(28px, 4vw, 44px);
+}
+
+.card {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  color: var(--color-ink);
+  box-shadow: 0 26px 60px -30px rgb(21 18 58 / 0.4), 0 2px 6px rgb(21 18 58 / 0.04);
+}
+/* same overlap the PageHero reserves */
+.band[data-overlap] .card {
+  margin-top: calc(-1 * clamp(44px, 4vw, 58px));
+}
+
+.title {
+  margin: 0;
+  font: 800 var(--fs-feature, 1.4rem) / 1.25 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.note {
+  margin: 4px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  text-wrap: balance;
+  color: var(--color-mut);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fact {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: 40px;
+  padding-left: 52px;
+}
+.value {
+  margin: 0 0 2px;
+  font: 800 1.45rem/1.1 var(--font-display);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--color-navy);
+}
+.text {
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--color-mut);
+}
+.fact[data-text] .text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-navy);
+}
+.tile {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.after {
+  margin-top: 14px;
+  font-size: 0.88rem;
+  color: var(--color-mut);
+}
+.after p {
+  margin: 0;
+}
+.band[data-tone="dark"] .after {
+  color: var(--color-onnavy-mut);
+}
+
+@media (max-width: 719px) {
+  /* an odd last fact (five proof items) spans the row instead of leaving a hole */
+  .fact:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 479px) {
+  /* one line on a 375 phone */
+  .title {
+    font-size: 1.2rem;
+  }
+  /* each fact sits under its tile, so a long label or figure keeps the column's full width */
+  .fact {
+    justify-content: flex-start;
+    padding: 50px 0 0;
+  }
+  .tile {
+    top: 0;
+    transform: none;
+  }
+}
+
+@media (min-width: 720px) {
+  .card {
+    padding: 24px 28px;
+  }
+  .card[data-kind="text"] .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Side by side: each fact as wide as its own label plus an equal share of the rest, so no label wraps early. */
+@media (min-width: 720px) {
+  .card[data-kind="value"] .list {
+    display: flex;
+    gap: 0;
+  }
+  .card[data-kind="value"] .fact {
+    flex: 1 1 auto;
+    padding-inline: 52px 12px;
+  }
+  .card[data-kind="value"] .fact + .fact {
+    padding-left: 70px;
+    border-left: 1px solid var(--color-line);
+  }
+  .card[data-kind="value"] .fact + .fact .tile {
+    left: 18px;
+  }
+}
+@media (min-width: 1280px) {
+  .card[data-kind="text"] .list {
+    display: flex;
+    gap: 0;
+  }
+  .card[data-kind="text"] .fact {
+    flex: 1 1 auto;
+    padding-inline: 52px 12px;
+  }
+  .card[data-kind="text"] .fact + .fact {
+    padding-left: 70px;
+    border-left: 1px solid var(--color-line);
+  }
+  .card[data-kind="text"] .fact + .fact .tile {
+    left: 18px;
+  }
+}
+
+/* Title column on the left (company figures), once the facts beside it still keep their labels short. */
+@media (min-width: 1280px) {
+  .card[data-kind="value"] {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+    padding: 26px 36px;
+  }
+  .card[data-kind="value"] .intro {
+    max-width: 332px;
+    padding-right: 30px;
+    margin-right: 30px;
+    border-right: 1px solid var(--color-line);
+  }
+  /* one line beside the facts (the home title is about 1px wider than the capped column) */
+  .card[data-kind="value"] .title {
+    white-space: nowrap;
+  }
+  .card[data-kind="text"] {
+    padding: 26px 36px;
+  }
+}

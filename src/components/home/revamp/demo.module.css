@@ -1,0 +1,520 @@
+/* Section C, takeoff demo: marked-up plan and workbook console, then "What you receive". Dark section.
+   Short rules (one or two declarations) sit on one line to keep the file readable at a glance. */
+
+/* ---------- section: faint drafting grid that fades out toward the edges ---------- */
+.sec { position: relative; isolation: isolate; }
+.sec::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ---------- console: pills, plan, readout, workbook (stacked; side by side from 1200px) ---------- */
+.demo {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "head" "plan" "read" "sheet";
+}
+@media (min-width: 640px) {
+  .demo {
+    padding: 20px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: var(--r-panel);
+    background: rgb(255 255 255 / 0.04);
+  }
+}
+@media (min-width: 1200px) {
+  .demo {
+    gap: 18px 24px;
+    padding: 24px;
+    /* equal halves: the workbook needs this width to keep its longest line item on one line */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "head head" "plan sheet" "read read";
+  }
+}
+
+/* ---------- layer pills ---------- */
+.head {
+  grid-area: head;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.headLabel {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-onnavy-mut);
+}
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 16px 0 10px;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+/* mouse only (it would stick after a tap), and no lift: resting on a pill picks it, and a pill that moved under the
+   pointer could flicker at its edge */
+@media (hover: hover) {
+  .pill:hover {
+    border-color: rgb(255 255 255 / 0.5);
+    background: rgb(255 255 255 / 0.11);
+  }
+}
+.pill[aria-pressed="true"] {
+  border-color: var(--color-amber);
+  background: #fff;
+  color: var(--color-navy);
+  box-shadow: 0 0 0 1px var(--color-amber), 0 8px 20px rgb(0 0 0 / 0.22);
+}
+/* a little tighter below desktop: one row at tablet width, two rows on a phone */
+@media (max-width: 1023px) {
+  .pills { gap: 6px; }
+  .pill { gap: 7px; padding: 0 13px 0 8px; font-size: 0.9rem; }
+  .pill .sw { width: 24px; }
+}
+
+/* legend sample on a scrap of plan paper: a line in the system color (vent dashed), a count badge, or all four */
+.sw {
+  flex: none;
+  width: 28px;
+  height: 18px;
+  border-radius: 6px;
+  background: #f4f6fb linear-gradient(var(--c, var(--color-navy)), var(--c, var(--color-navy))) center / 16px 4px no-repeat;
+  box-shadow: inset 0 0 0 1px rgb(31 27 80 / 0.14);
+}
+.sw[data-c="vent"] { background-image: repeating-linear-gradient(90deg, var(--c) 0 5px, transparent 5px 8px); }
+.sw[data-c="fixtures"],
+.sw[data-c="equipment"] {
+  background-size: 100% 100%;
+  background-image: radial-gradient(circle, var(--color-amber) 0 3.6px, var(--color-navy) 3.8px 5.2px, transparent 5.4px);
+}
+.sw[data-c="equipment"] {
+  background-image: radial-gradient(circle, #fff 0 2.4px, var(--color-navy) 2.6px 3.8px, #fff 4px 4.6px, var(--color-navy) 4.8px 6px, transparent 6.2px);
+}
+.sw[data-c="all"] {
+  background-image:
+    linear-gradient(var(--color-cold), var(--color-cold)), linear-gradient(var(--color-hot), var(--color-hot)),
+    linear-gradient(var(--color-waste), var(--color-waste)), linear-gradient(var(--color-vent), var(--color-vent));
+  background-size: 16px 2px;
+  background-position: 6px 4px, 6px 7px, 6px 10px, 6px 13px;
+}
+.swSm { width: 22px; height: 14px; border-radius: 4px; background-size: 12px 3px; }
+
+/* ---------- plan pane ---------- */
+.planPane {
+  grid-area: plan;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #c8d0e0;
+  border-radius: var(--r-inner);
+  background: #f4f6fb;
+  box-shadow: var(--shadow-card);
+}
+.bar { flex-wrap: wrap; }
+.barTitle,
+.barHint { display: inline-flex; align-items: center; gap: 8px; }
+.barTitle { font-weight: 700; color: var(--color-navy); }
+.barHint { gap: 6px; margin-left: auto; color: var(--color-mut); }
+/* sheet number chip, in the plan bar and the Source column */
+.src {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--color-tint);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--color-amber-ink);
+}
+.plan {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.planSvg { display: block; width: 100%; height: auto; }
+/* stacked (tablet, small laptop): cap the drawing height so the workbook below stays close */
+@media (min-width: 640px) and (max-width: 1199px) {
+  .planSvg { width: min(100%, 832px); }
+}
+/* phones: crop to the plan itself (the pills are the legend, the workbook has the counts) so labels stay readable */
+@media (max-width: 639px) {
+  .plan {
+    display: block;
+    place-items: normal; /* Chrome applies justify-items to block layout too: keep the oversized drawing left-aligned */
+    aspect-ratio: 440 / 300;
+    overflow: hidden;
+  }
+  .planSvg { width: 145.4545%; max-width: none; margin: -3.1818% 0 0 -3.6364%; }
+  .barHint { display: none; }
+}
+
+/* ---------- plan layers: picked layers stay, the rest fade back ---------- */
+.plan [data-layer] { cursor: pointer; transition: opacity 0.25s ease; }
+.plan:not([data-active="all"]) [data-layer] { opacity: 0.12; }
+.plan[data-active~="cold"] [data-layer="cold"],
+.plan[data-active~="hot"] [data-layer="hot"],
+.plan[data-active~="waste"] [data-layer="waste"],
+.plan[data-active~="vent"] [data-layer="vent"],
+.plan[data-active~="fixtures"] [data-layer="fixtures"],
+.plan[data-active~="equipment"] [data-layer="equipment"] {
+  opacity: 1;
+}
+
+/* highlighter laid under a run (pathLength = 1, so the dash maths is the same for every run) */
+.mark {
+  opacity: 0;
+  stroke-opacity: 0.3;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  transition: opacity 0.2s ease, stroke-dashoffset 0.75s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.plan[data-active~="cold"]:not([data-item]) [data-layer="cold"] .mark,
+.plan[data-active~="hot"]:not([data-item]) [data-layer="hot"] .mark,
+.plan[data-active~="waste"]:not([data-item]) [data-layer="waste"] .mark,
+.plan[data-active~="vent"]:not([data-item]) [data-layer="vent"] .mark,
+.plan[data-item="cold-run"] [data-layer="cold"] .mark,
+.plan[data-item="hot-run"] [data-layer="hot"] .mark,
+.plan[data-item="waste-run"] [data-layer="waste"] .mark,
+.plan[data-item="vent-run"] [data-layer="vent"] .mark {
+  opacity: 1;
+  stroke-dashoffset: 0;
+}
+
+/* count marks around fixtures, valves and the water heater */
+.dab {
+  fill: var(--color-amber);
+  fill-opacity: 0.38;
+  stroke: var(--color-amber);
+  stroke-width: 1.5;
+  opacity: 0;
+  transform: scale(0.5);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.2s ease var(--d, 0ms), transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1) var(--d, 0ms);
+}
+.plan[data-active="fixtures"]:not([data-item]) .dab:is([data-item="wc"], [data-item="lav"], [data-item="sink"]),
+.plan[data-item="wc"] .dab[data-item="wc"],
+.plan[data-item="lav"] .dab[data-item="lav"],
+.plan[data-item="sink"] .dab[data-item="sink"],
+.plan[data-item="valves"] .dab[data-item="valves"],
+.plan[data-active="equipment"] .dab[data-item="wh"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* count badges pop once when their fixture is picked */
+.pop { transform-box: fill-box; transform-origin: center; }
+.plan[data-active="fixtures"]:not([data-item]) .pop:is([data-item="wc"], [data-item="lav"], [data-item="sink"]),
+.plan[data-item="wc"] .pop[data-item="wc"],
+.plan[data-item="lav"] .pop[data-item="lav"],
+.plan[data-item="sink"] .pop[data-item="sink"],
+.plan[data-active="equipment"] .pop[data-item="wh"] {
+  animation: pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) var(--d, 0ms) both;
+}
+@keyframes pop {
+  45% { transform: scale(1.35); }
+}
+
+/* pointer preview: hovering a run on the plan lights it and shows its highlighter faintly */
+@media (hover: hover) {
+  .plan:has([data-layer="cold"]:hover) [data-layer="cold"],
+  .plan:has([data-layer="hot"]:hover) [data-layer="hot"],
+  .plan:has([data-layer="waste"]:hover) [data-layer="waste"],
+  .plan:has([data-layer="vent"]:hover) [data-layer="vent"],
+  .plan:has([data-layer="fixtures"]:hover) [data-layer="fixtures"],
+  .plan:has([data-layer="equipment"]:hover) [data-layer="equipment"] {
+    opacity: 1;
+  }
+  .plan:has([data-layer="cold"]:hover) [data-layer="cold"] .mark,
+  .plan:has([data-layer="hot"]:hover) [data-layer="hot"] .mark,
+  .plan:has([data-layer="waste"]:hover) [data-layer="waste"] .mark,
+  .plan:has([data-layer="vent"]:hover) [data-layer="vent"] .mark {
+    opacity: 0.7;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* first view: every run traced once in turn, then the badges pop (about 2.5 s, never under reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .plan[data-intro][data-active="all"] .mark { animation: trace 1.5s ease var(--d, 0ms) both; }
+  .plan[data-intro][data-active="all"] .pop {
+    animation: pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) calc(1.2s + var(--d, 0ms)) both;
+  }
+}
+@keyframes trace {
+  0%, 80% { opacity: 1; }
+  50%, 100% { stroke-dashoffset: 0; }
+}
+
+/* ---------- readout ---------- */
+.readout {
+  grid-area: read;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: var(--r-inner);
+  background: rgb(255 255 255 / 0.06);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-onnavy);
+}
+.readout svg { flex: none; margin-top: 2px; color: var(--color-amber); }
+.readout strong { color: #fff; }
+.say { animation: say 0.3s ease both; }
+@keyframes say {
+  from { opacity: 0; transform: translateY(4px); }
+}
+/* reserve the lines the longest message needs, so the workbook below never moves; a shorter one sits centered */
+@media (max-width: 1199px) {
+  .readout { align-items: center; min-height: calc(2 * 1.5em + 26px); }
+  .readout svg { margin-top: 0; }
+}
+@media (max-width: 639px) {
+  .readout { min-height: calc(3 * 1.5em + 26px); }
+}
+
+/* ---------- workbook ---------- */
+.sheet { grid-area: sheet; display: flex; flex-direction: column; min-width: 0; border-radius: var(--r-inner); }
+.panels { flex: 1; }
+.panel { min-width: 0; }
+/* the sheet clips overflow and the panel is flush with its sides: keep the ring inside */
+.panel:focus-visible { outline-offset: -3px; }
+/* Fixed columns (Line item takes the rest) and nine rows of one height on every tab: tabs line up and never change
+   the sheet's height. --row and the column widths step down with the space available. */
+.table {
+  --row: 45px;
+  --c1: 44px;
+  --c2: 132px;
+  --c4: 84px;
+  --c5: 56px;
+  --c6: 58px;
+  min-width: 0;
+  table-layout: fixed;
+}
+.table th:nth-child(1) { width: var(--c1); }
+.table th:nth-child(2) { width: var(--c2); }
+.table th:nth-child(4) { width: var(--c4); }
+.table th:nth-child(5) { width: var(--c5); }
+.table th:nth-child(6) { width: var(--c6); }
+.table td,
+.table th { padding: 9px 12px; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
+.table thead th { padding-block: 8px; }
+.table tbody td { height: var(--row); }
+.lineCell { position: relative; white-space: normal; }
+.line {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-navy);
+  text-align: left;
+  cursor: pointer;
+}
+/* the whole cell is the tap target */
+.line::after { content: ""; position: absolute; inset: 0; }
+.line:hover { text-decoration: underline 2px var(--color-amber); text-underline-offset: 3px; }
+.line:focus-visible { outline-offset: 2px; }
+/* the system name under the line item, used on small phones where the System column is dropped */
+.lineSys { display: none; }
+.rowOn td { background: #fff6d9; }
+.rowOn td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-amber);
+  background: var(--color-tint);
+  font-weight: 800;
+  color: var(--color-amber-ink);
+}
+/* Windows high contrast drops the tint and the bar: mark the picked line with the selection colours instead */
+@media (forced-colors: active) {
+  .rowOn .line { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .rowOn .lineSys { color: inherit; }
+}
+/* offset parent for the keep-active-tab-in-view scroll */
+.tabs { position: relative; gap: 2px; padding: 0 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .tabs { scroll-behavior: smooth; }
+}
+.tab {
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0 0 8px 8px;
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--color-mut);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.tab:hover { color: var(--color-navy); }
+/* inset ring: the strip scrolls sideways, so an outside ring would be clipped */
+.tab:focus-visible { outline-offset: -3px; border-radius: 8px; }
+/* amber ink, not amber: the bar is the selected cue and needs 3:1 on white */
+.tab[aria-selected="true"] {
+  background: #fff;
+  color: var(--color-navy);
+  box-shadow: inset 0 -3px 0 var(--color-amber-ink);
+}
+
+/* side by side below 1440: a denser sheet, so every line item stays on one line */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .table { --row: 42px; --c1: 30px; --c2: 118px; --c4: 66px; --c5: 44px; --c6: 46px; }
+  .table td,
+  .table th { padding: 8px; font-size: 0.8rem; }
+  .line { gap: 7px; }
+  .line .sw { width: 18px; }
+  /* keeps the sheet note on one line so both pane bars stay level */
+  .sheet :global(.sheet-bar) { font-size: 0.72rem; line-height: calc(0.8rem * 1.65); } /* the line box of the unshrunk bar */
+}
+@media (max-width: 1023px) {
+  .tab { min-height: 44px; }
+}
+/* small tablets: two narrower columns keep the longest line item on one line down to 720px */
+@media (max-width: 767px) {
+  .table { --c1: 36px; --c4: 78px; }
+}
+/* phones (the global .sheet rules also wrap text and drop the row-number column here) */
+@media (max-width: 719px) {
+  .table { --row: 50px; --c2: 27%; --c4: 64px; --c5: 42px; --c6: 44px; }
+  .table td,
+  .table th { padding: 6px 8px; }
+  .rowOn td:nth-child(2) { box-shadow: inset 4px 0 0 var(--color-amber); }
+  .src { padding-inline: 5px; }
+}
+/* small phones: the System column moves under the line item */
+@media (max-width: 639px) {
+  .table { --c4: 62px; --c5: 40px; --c6: 42px; }
+  .table th:nth-child(2),
+  .table td:nth-child(2) { display: none; }
+  .rowOn td:nth-child(3) { box-shadow: inset 4px 0 0 var(--color-amber); }
+  .lineCell { line-height: 1.35; } /* the button inherits it (font: inherit) */
+  .line { align-items: flex-start; gap: 7px; }
+  .line .sw { width: 18px; margin-top: 2px; }
+  .lineSys {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-mut);
+  }
+}
+/* phones under about 420px: the longest line items take two lines (three under 340px), so every row gets that room */
+@media (max-width: 419px) {
+  .table { --row: 64px; }
+}
+@media (max-width: 339px) {
+  .table { --row: 80px; }
+}
+
+/* ---------- what you receive ---------- */
+.receive {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "label" "cards" "cta";
+  margin-top: clamp(44px, 5vw, 72px);
+}
+.recHead { grid-area: label; display: flex; align-items: flex-start; gap: 16px; }
+.recTitle {
+  margin: 2px 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2vw, 1.8rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.recSub,
+.recCta p { margin: 0; font-size: 0.98rem; color: var(--color-onnavy); }
+/* in-text link, styled like the site's other in-text links (not told apart by color alone) */
+.recSub a { font-weight: 600; text-decoration: underline 2px var(--color-amber); text-underline-offset: 3px; }
+.recGrid {
+  grid-area: cards;
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* the same cool surface as the other dark cards; content only, so no hover */
+.recCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: var(--r-card);
+  background: rgb(255 255 255 / 0.05);
+}
+.recCard h3 { margin: 0 0 4px; font-size: var(--fs-card-sm); }
+.recCard p { margin: 0; font-size: 0.95rem; line-height: 1.55; color: var(--color-onnavy); }
+.recCheck {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-top: -1px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+.recCta { grid-area: cta; align-self: start; }
+.recCta p { margin-bottom: 12px; }
+/* two columns from 600px (the fifth card spans), 3 + 2 from 1024px, label column beside the cards from 1200px */
+@media (min-width: 600px) {
+  .recGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .recCard:last-child { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+  .recGrid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .recCard,
+  .recCard:last-child { grid-column: span 2; }
+  .recCard:nth-child(n + 4) { grid-column: span 3; }
+}
+@media (min-width: 1200px) {
+  .receive {
+    gap: 20px 40px;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 3.15fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "label cards" "cta cards";
+  }
+  .recHead { flex-direction: column; gap: 18px; }
+}

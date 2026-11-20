@@ -1,0 +1,209 @@
+/*
+ * Related pages as whole-card links (home pricing and guide card language): one column of compact rows under 640px,
+ * two columns to 1023px, then 3 across (2 x 2 for four, 4 across from 1280px; five centre their last row). The arrow
+ * circle is a CSS mask (no SVG per card).
+ */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 1.8vw, 24px);
+  }
+  .grid:is([data-count="1"], [data-count="2"], [data-count="4"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .grid[data-count="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+/* three or five cards: the short last row sits centred instead of leaving a hole (2 + 1, 2 + 2 + 1, then 3 + 2), on
+   doubled tracks */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid:is([data-count="3"], [data-count="5"]) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .grid:is([data-count="3"], [data-count="5"]) > li {
+    grid-column: span 2;
+  }
+  .grid:is([data-count="3"], [data-count="5"]) > li:last-child {
+    grid-column: 2 / span 2;
+  }
+}
+@media (min-width: 1024px) {
+  .grid[data-count="5"] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .grid[data-count="5"] > li {
+    grid-column: span 2;
+  }
+  .grid[data-count="5"] > li:nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+}
+.grid > li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 24px 24px 20px;
+}
+.card[data-kind="guide"] .tile {
+  background: var(--color-alt);
+  color: var(--color-navy);
+}
+
+.text {
+  display: grid;
+  gap: 6px;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-card, 1.2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  color: var(--color-navy);
+  text-decoration: none;
+}
+/* The whole card is the link (the title's ::after covers it); .hr-card is position: relative. */
+.title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--r-card, 20px);
+}
+.title:focus-visible {
+  outline: none;
+}
+.title:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.card:hover .title {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.blurb {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+
+/* footer: the label on the left, a 34px arrow circle on the right that turns amber */
+.go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.arrow {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.arrow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+.card:hover .arrow,
+.card:focus-within .arrow {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+
+/* phones: a compact row, tile left and the arrow alone on the right */
+@media (max-width: 639px) {
+  .card {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 34px;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+  }
+  .tile {
+    align-self: start;
+  }
+  .title {
+    font-size: var(--fs-card-sm, 1.08rem);
+  }
+  .blurb {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .go {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .goText {
+    display: none;
+  }
+}
+
+/* on a navy section */
+:global(.tone-dark) .title {
+  color: #fff;
+}
+:global(.tone-dark) .title:focus-visible::after {
+  outline-color: var(--color-amber);
+}
+:global(.tone-dark) .blurb {
+  color: var(--color-onnavy);
+}
+:global(.tone-dark) .go {
+  border-color: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+:global(.tone-dark) .arrow {
+  background: rgb(255 255 255 / 0.1);
+}
+
+@media (forced-colors: active) {
+  .arrow::before {
+    background: CanvasText;
+  }
+}

@@ -1,0 +1,12 @@
+/* Class scanning is limited to source files. Automatic detection also read stray files elsewhere in the project,
+   and one odd file name in its glob made Turbopack panic. */
+@import "tailwindcss" source(none);
+@source "../**/*.{ts,tsx,mdx}";
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+@import "../styles/chrome.css";
+@import "../styles/sections.css";
+@import "../styles/forms.css";
+@import "../styles/prose.css";
+@import "../styles/home.css";
+@import "../styles/kit.css";

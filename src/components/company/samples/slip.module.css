@@ -1,0 +1,138 @@
+/*
+ * /samples: the sample request slip, a plain GET form to the quote form (project type and what the sample should
+ * show as pill radios, a dashed tear-off edge and a stamp).
+ */
+
+/* ---------- sample request slip ---------- */
+.match {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .match {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    column-gap: clamp(40px, 5vw, 80px);
+  }
+}
+.matchCopy h2 {
+  margin-bottom: 14px;
+}
+.matchCopy p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  color: var(--color-mut);
+}
+/* a transmittal slip: a torn-off dashed edge, a stamp, the choices */
+.slip {
+  position: relative;
+  padding: clamp(34px, 3.4vw, 42px) clamp(20px, 2.6vw, 32px) clamp(22px, 2.6vw, 30px);
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-panel);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+.slip::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 22px;
+  right: 22px;
+  border-top: 2px dashed #c8d0e0;
+}
+.stamp {
+  position: absolute;
+  top: 24px;
+  right: 22px;
+  padding: 3px 10px;
+  border: 2px solid var(--color-amber);
+  border-radius: 6px;
+  font: 800 0.7rem/1.3 var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+  transform: rotate(-5deg);
+}
+.fs {
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 0;
+  border: 0;
+}
+.fs legend {
+  margin-bottom: 10px;
+  padding: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+/* the native radio covers its pill: invisible, still the click target and the keyboard control */
+.opt input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .opt:hover {
+    border-color: color-mix(in srgb, var(--color-amber) 55%, var(--color-line));
+    background: #fffbeb;
+  }
+}
+.opt:has(input:checked) {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+.opt:has(input:focus-visible) {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.slip :global(.btn) {
+  margin-top: 4px;
+}
+.slipFoot {
+  margin: 12px 0 0;
+  font-size: 0.88rem;
+  color: var(--color-mut);
+}
+@media (max-width: 559px) {
+  .slip :global(.btn) {
+    width: 100%;
+  }
+}
+@media (forced-colors: active) {
+  .opt:has(input:checked) {
+    outline: 2px solid HighlightText;
+    outline-offset: -5px;
+  }
+}

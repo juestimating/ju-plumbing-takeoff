@@ -1,0 +1,336 @@
+/*
+ * The live workbook (SheetTrace.tsx): the global .sheet frame (sections.css) with a formula bar, pickable lines, the
+ * home demo's picked row and sheet chips, view buttons or real bottom tabs (never a strip of tab names that do
+ * nothing), and line cards below 720px for sheets of six or more columns.
+ */
+.trace {
+  min-width: 0;
+}
+
+/* ---------- views above the sheet ---------- */
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+.ask {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.opt {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-navy);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.opt[aria-pressed="true"] {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+@media (hover: hover) {
+  .opt:not([aria-pressed="true"]):hover {
+    border-color: color-mix(in srgb, var(--color-amber) 45%, var(--color-line));
+  }
+}
+
+/* ---------- formula bar: every sentence in one cell, so the sheet never moves ---------- */
+.fx {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #c8d0e0;
+  background: #fff;
+  font-size: 0.88rem;
+}
+.ref {
+  min-width: 44px;
+  padding: 2px 8px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-navy);
+}
+.fxMark {
+  padding-top: 2px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--color-mut);
+}
+.fxText {
+  display: grid;
+  margin: 0;
+  padding-top: 2px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+.fxText > span {
+  grid-area: 1 / 1;
+  align-self: center;
+  visibility: hidden;
+}
+.fxText > [data-on] {
+  visibility: visible;
+}
+.hint {
+  color: var(--color-mut);
+}
+
+/* ---------- rows ---------- */
+.table th,
+.table td {
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+.name {
+  position: relative;
+}
+.line {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+/* the whole cell is the tap target */
+.line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.line:hover {
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 3px;
+}
+.src {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--color-tint);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--color-amber-ink);
+}
+/* the picked line: tint row, amber bar, solid chip (home demo) */
+.table tr[data-on] td {
+  background: #fff6d9;
+}
+.table tr[data-on] td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-amber);
+  background: var(--color-tint);
+  font-weight: 800;
+  color: var(--color-amber-ink);
+}
+.table tr[data-on] .src {
+  background: var(--color-amber);
+  color: var(--color-navy);
+}
+/* views: a lit column, or the rows outside the picked value faded back (every row stays in place) */
+.table [data-focus] {
+  background: color-mix(in srgb, var(--color-amber) 11%, #fff);
+}
+.table th[data-focus] {
+  box-shadow: inset 0 -3px 0 var(--color-amber-ink);
+}
+/* rows outside the picked value step back without dropping below 4.5:1: muted ink on a grey wash with lighter rules
+   (only the wash and the rules fade), the source chips at full ink */
+.table tr[data-off] td {
+  border-color: #eef1f6;
+  background: #f7f8fb;
+  color: var(--color-mut);
+}
+.table tr[data-off] .line {
+  font-weight: 500;
+  color: var(--color-mut);
+}
+
+/* ---------- real bottom tabs (the residential stages) ---------- */
+.tabs {
+  position: relative;
+  padding: 0 10px;
+}
+.tab {
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0 0 8px 8px;
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--color-mut);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.tab:hover {
+  color: var(--color-navy);
+}
+/* inset ring: the strip scrolls sideways, so an outside ring would be clipped */
+.tab:focus-visible {
+  border-radius: 8px;
+  outline-offset: -3px;
+}
+.tab[aria-selected="true"] {
+  background: #fff;
+  box-shadow: inset 0 -3px 0 var(--color-amber-ink);
+  color: var(--color-navy);
+}
+@media (width < 1024px) {
+  .tab {
+    min-height: 44px;
+  }
+}
+
+/* ---------- phones ---------- */
+@media (width < 720px) {
+  .fx {
+    gap: 8px;
+  }
+  /* line cards already show every value, so the formula bar would only repeat them */
+  .sheet[data-cards] .fx {
+    display: none;
+  }
+  /* the row-number column is hidden here (sections.css), so the bar moves to the next cell */
+  .table tr[data-on] td:nth-child(2) {
+    box-shadow: inset 4px 0 0 var(--color-amber);
+  }
+  /* six or more columns: each line is a card of label and value pairs */
+  .table[data-cards],
+  .table[data-cards] tbody,
+  .table[data-cards] tr,
+  .table[data-cards] td {
+    display: block;
+  }
+  .table[data-cards] thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .table[data-cards] tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 14px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e1e6f0;
+  }
+  .table[data-cards] tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .table[data-cards] td {
+    padding: 0;
+    border: 0;
+    text-align: left;
+  }
+  .table[data-cards] td:global(.rn) {
+    display: none;
+  }
+  .table[data-cards] .name {
+    grid-column: 1 / -1;
+    font-size: 0.95rem;
+  }
+  .table[data-cards] td:not(.name)::before {
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-mut);
+  }
+  .table[data-cards] tr[data-on] {
+    background: #fff6d9;
+    box-shadow: inset 4px 0 0 var(--color-amber);
+  }
+  .table[data-cards] tr[data-on] td {
+    background: none;
+    box-shadow: none;
+  }
+  /* a faded line card: the wash on the whole card, not cell by cell */
+  .table[data-cards] tr[data-off] {
+    background: #f7f8fb;
+  }
+  .table[data-cards] tr[data-off] td {
+    background: none;
+  }
+}
+
+/* ---------- after the sheet ---------- */
+.sample {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 18px;
+  margin-top: 26px;
+  text-align: center;
+}
+.sample p {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Windows high contrast drops the tints and the bar: mark the picked line and the lit column with system colors */
+@media (forced-colors: active) {
+  .table tr[data-on] .line {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .table [data-focus] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  /* the wash is dropped here, so the rows outside the view take the system's dimmed text */
+  .table tr[data-off] :is(td, .line) {
+    color: GrayText;
+  }
+}

@@ -1,0 +1,438 @@
+/*
+ * HoverTabs, generalized from the home system explorer (home/revamp/systems.module.css). Vertical: a list beside the
+ * card from 1024px, the same buttons as a sideways chip row below (or a stacked list at every width, data-chips="0").
+ * Horizontal: wrapping pill chips above the card. The card frames the stacked panels.
+ *
+ * Every rule stays at one class of specificity or less (context and states go inside :where()), so a family restyles
+ * any part with one class of its own on the root: `.mine [role="tab"]`, `.mine [data-ht-card]`, and `--ht-list` for the
+ * list column width. Rules are ordered: parts, dark tone, layout modes, selected states, hover, forced colors.
+ */
+
+/* ---------- parts ---------- */
+:where(.root) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px 28px;
+}
+.ask {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-mut);
+}
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px 16px 8px 9px;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: #fff;
+  font: 600 1rem/1.3 var(--font-sans);
+  color: var(--color-navy);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+.tabIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--color-tint);
+  color: var(--color-amber-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+:where(.tab[data-c]) .tabIcon {
+  background: color-mix(in srgb, var(--c) 12%, white);
+  color: var(--c);
+}
+.num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--color-tint);
+  font: 800 0.9rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+/* the aside always takes its own line under the label, so every row's badge starts at the same x */
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.tabLabel {
+  min-width: 0;
+}
+.aside {
+  flex: 0 0 100%;
+  display: inline-flex;
+}
+/* the arrow is a CSS mask of the lucide arrow-right at 18px (no SVG per tab); currentColor paints it */
+.tabArrow {
+  display: none;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+
+/* The card frames the panels, which take the whole card. */
+.card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
+  gap: 24px 32px;
+  min-width: 0;
+  padding: clamp(16px, 2.2vw, 28px);
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-panel, 24px);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+/* every panel in one grid cell: the cell keeps the tallest panel's height, so a pick never moves the page */
+.panels {
+  display: grid;
+  min-width: 0;
+  container-type: inline-size;
+}
+.panel {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+.panel:where([inert]) {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+}
+/* The incoming panel settles in fast (hovering down the list opens one every fraction of a second); the outgoing one
+   goes at once, so two texts never show together. Nothing animates on load. */
+@media (prefers-reduced-motion: no-preference) {
+  .panel:where(:not([inert])) {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+}
+
+/* ---------- dark tone: tabs on navy, the home demo's console as the card ---------- */
+:where(.root[data-tone="dark"]) .ask {
+  color: var(--color-onnavy);
+}
+:where(.root[data-tone="dark"]) .tab {
+  border-color: rgb(255 255 255 / 0.14);
+  background: rgb(255 255 255 / 0.05);
+  color: #fff;
+}
+:where(.root[data-tone="dark"]) .tabIcon,
+:where(.root[data-tone="dark"]) .num {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-amber);
+}
+:where(.root[data-tone="dark"] .tab[data-c]) .tabIcon {
+  color: color-mix(in srgb, var(--c) 45%, white);
+}
+:where(.root[data-tone="dark"]) .tabArrow {
+  color: var(--color-amber);
+}
+:where(.root[data-tone="dark"]) .card {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.05);
+  box-shadow: none;
+}
+
+/* ---------- vertical: the side-by-side list from 1024px ---------- */
+@media (width >= 1024px) {
+  :where(.root[data-orient="vertical"]) {
+    grid-template-columns: var(--ht-list, clamp(260px, 24vw, 340px)) minmax(0, 1fr);
+  }
+  :where(.root[data-orient="vertical"]) .ask {
+    grid-column: 1 / -1;
+  }
+  /* The list stretches to the card's height, so both columns end on the same line, with each row at most 84px
+     (--ht-n is the tab count). Past that, or whichever column is shorter, rides along beside the other (sticky under
+     the header and the content pages' section bar). Long labels still get their room (min-height). */
+  :where(.root[data-orient="vertical"]) .tabs {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 16px);
+    align-self: start;
+    height: min(100%, calc(var(--ht-n, 6) * 84px + (var(--ht-n, 6) - 1) * 8px));
+    min-height: min-content;
+  }
+  :where(.root[data-orient="vertical"]) .tab {
+    flex: 1 1 auto;
+    min-height: 64px;
+  }
+  :where(.root[data-orient="vertical"]) .card {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 16px);
+    align-self: start;
+  }
+  /* Resting the mouse on a tab opens it, so the hover cue is only the arrow fading in on the way to selected.
+     No nudge: a tab that moves under the pointer and back as it opens would wobble. */
+  :where(.root[data-orient="vertical"]) .tabArrow {
+    display: block;
+    flex: none;
+    color: var(--color-amber-ink);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  :where(.root[data-orient="vertical"][data-tone="dark"]) .tabArrow {
+    color: var(--color-amber);
+  }
+}
+/* the arrow slides in only when motion is welcome; under reduced motion it just fades */
+@media (width >= 1024px) and (prefers-reduced-motion: no-preference) {
+  :where(.root[data-orient="vertical"]) .tabArrow {
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+}
+
+/* ---------- sideFrom 900 (with chipsBelow 0): the same side-by-side list from 900px. A copy of the 1024px rules
+   above and of their selected and hover states below; keep the two in step. ---------- */
+@media (width >= 900px) {
+  :where(.root[data-side="900"]) {
+    grid-template-columns: var(--ht-list, clamp(260px, 24vw, 340px)) minmax(0, 1fr);
+  }
+  :where(.root[data-side="900"]) .ask {
+    grid-column: 1 / -1;
+  }
+  :where(.root[data-side="900"]) .tabs {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 16px);
+    align-self: start;
+    height: min(100%, calc(var(--ht-n, 6) * 84px + (var(--ht-n, 6) - 1) * 8px));
+    min-height: min-content;
+  }
+  :where(.root[data-side="900"]) .tab {
+    flex: 1 1 auto;
+    min-height: 64px;
+  }
+  :where(.root[data-side="900"]) .card {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 16px);
+    align-self: start;
+  }
+  :where(.root[data-side="900"]) .tabArrow {
+    display: block;
+    flex: none;
+    color: var(--color-amber-ink);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  :where(.root[data-side="900"][data-tone="dark"]) .tabArrow {
+    color: var(--color-amber);
+  }
+}
+@media (width >= 900px) and (prefers-reduced-motion: no-preference) {
+  :where(.root[data-side="900"]) .tabArrow {
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+}
+
+/* ---------- vertical below 1024px: the home chip row, scrolling sideways inside its own row ---------- */
+@media (width < 1024px) {
+  :where(.root[data-orient="vertical"]:not([data-chips])) .tabs {
+    flex-direction: row;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 6px var(--gutter) 8px;
+    overflow-x: auto;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  :where(.root[data-orient="vertical"]:not([data-chips])) .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  :where(.root[data-orient="vertical"]:not([data-chips])) .tab {
+    flex: none;
+    gap: 10px;
+    min-height: 48px;
+    max-width: 16rem;
+    padding: 5px 18px 5px 6px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    line-height: 1.25;
+  }
+  :where(.root[data-orient="vertical"]:not([data-chips])) .tabIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+  }
+}
+@media (width < 1024px) and (prefers-reduced-motion: no-preference) {
+  .tabs {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ---------- horizontal: wrapping pill chips above the card ---------- */
+:where(.root[data-orient="horizontal"]) .tabs {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+:where(.root[data-orient="horizontal"]) .tab {
+  gap: 9px;
+  min-height: 44px;
+  padding: 6px 18px 6px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+:where(.root[data-orient="horizontal"]) .tabIcon {
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--c-ink, var(--color-amber-ink));
+}
+:where(.root[data-orient="horizontal"][data-tone="dark"]) .tabIcon {
+  color: var(--color-amber);
+}
+:where(.root[data-orient="horizontal"]) .num {
+  width: 28px;
+  height: 28px;
+  font-size: 0.82rem;
+}
+
+/* ---------- selected ---------- */
+/* The chip row and the stacked list show no arrow, so the ring carries the selected state: amber ink keeps it above
+   3:1 on white and on the section's grey. The light side-by-side list goes bright amber, where its arrow carries it. */
+.tab:where([aria-selected="true"]) {
+  border-color: var(--color-amber-ink);
+  box-shadow:
+    0 0 0 1px var(--color-amber-ink),
+    var(--shadow-card);
+}
+:where(.tab[aria-selected="true"]) .tabIcon,
+:where(.tab[aria-selected="true"]) .num {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+:where(.tab[data-c][aria-selected="true"]) .tabIcon {
+  background: var(--c);
+  color: #fff;
+}
+:where(.root[data-tone="dark"]) .tab:where([aria-selected="true"]) {
+  border-color: var(--color-amber);
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: 0 0 0 1px var(--color-amber);
+}
+@media (width >= 1024px) {
+  :where(.root[data-orient="vertical"][data-tone="light"]) .tab:where([aria-selected="true"]) {
+    border-color: var(--color-amber);
+    box-shadow:
+      0 0 0 1px var(--color-amber),
+      var(--shadow-card);
+  }
+  :where(.root[data-orient="vertical"] .tab[aria-selected="true"]) .tabArrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (width >= 900px) {
+  :where(.root[data-side="900"][data-tone="light"]) .tab:where([aria-selected="true"]) {
+    border-color: var(--color-amber);
+    box-shadow:
+      0 0 0 1px var(--color-amber),
+      var(--shadow-card);
+  }
+  :where(.root[data-side="900"] .tab[aria-selected="true"]) .tabArrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* horizontal chips: solid amber, as the home hero chips */
+:where(.root[data-orient="horizontal"]) .tab:where([aria-selected="true"]) {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  box-shadow: none;
+}
+:where(.root[data-orient="horizontal"] .tab[aria-selected="true"]) .tabIcon {
+  background: none;
+  color: currentColor;
+}
+
+/* ---------- hover and press (mouse) ---------- */
+@media (hover: hover) {
+  .tab:where(:not([aria-selected="true"]):hover) {
+    border-color: color-mix(in srgb, var(--c, var(--color-amber)) 45%, var(--color-line));
+  }
+  :where(.root[data-tone="dark"]) .tab:where(:not([aria-selected="true"]):hover) {
+    border-color: rgb(255 255 255 / 0.34);
+  }
+}
+@media (width >= 1024px) and (hover: hover) {
+  :where(.root[data-orient="vertical"] .tab:hover) .tabArrow {
+    opacity: 0.5;
+    transform: none;
+  }
+  :where(.root[data-orient="vertical"] .tab[aria-selected="true"]:hover) .tabArrow {
+    opacity: 1;
+  }
+}
+@media (width >= 900px) and (hover: hover) {
+  :where(.root[data-side="900"] .tab:hover) .tabArrow {
+    opacity: 0.5;
+    transform: none;
+  }
+  :where(.root[data-side="900"] .tab[aria-selected="true"]:hover) .tabArrow {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(.root[data-orient="horizontal"]) .tab:where(:active) {
+    transform: scale(0.97);
+  }
+}
+
+/* ---------- forced colors: the selected tab gets Highlight from home.css; an inner ring adds a cue that is not color
+   (left to the focus ring while the tab has keyboard focus). The masked arrow is a background, which forced colors
+   would drop, so it gets a system color. ---------- */
+@media (forced-colors: active) {
+  .tab:where([aria-selected="true"]:not(:focus-visible)) {
+    outline: 2px solid HighlightText;
+    outline-offset: -5px;
+  }
+  .tabArrow {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  :where(.tab[aria-selected="true"]) .tabArrow {
+    background: HighlightText;
+  }
+}

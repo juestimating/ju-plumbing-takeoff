@@ -1,0 +1,225 @@
+/*
+ * "On this page" links. bar: chips in a white strip, sticky under the header from 1024px (56px tall, below the
+ * header's z-index so mega menus cover it); under 1024px a static row that scrolls sideways on its own background.
+ * rail: a vertical list for a side column, sticky from 1024px. The current link changes color only (never weight),
+ * so nothing shifts. The bar's height is kit.css --bar-h (scroll padding and other sticky offsets count it).
+ */
+.jump {
+  min-width: 0;
+}
+.label {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+/* a white pill with a hairline, so it shows on the alt grey and on white */
+.count {
+  flex: none;
+  padding: 2px 9px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  font-size: 0.78rem;
+}
+
+/* ---------- bar ---------- */
+.bar .in {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bar .list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 2px var(--gutter);
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.bar .list::-webkit-scrollbar {
+  display: none;
+}
+.bar .list li {
+  flex: none;
+}
+.bar .link {
+  padding: 0 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 0.94rem;
+  white-space: nowrap;
+}
+.bar .link:hover {
+  border-color: var(--color-navy-2);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-underline-offset: 4px;
+}
+.bar .link[aria-current] {
+  border-color: var(--color-navy);
+  background: var(--color-navy);
+  color: #fff;
+}
+.bar .link[aria-current] .count {
+  background: rgb(255 255 255 / 0.16);
+  color: #fff;
+}
+/* inset ring: the scrolling row would clip an outer one */
+.bar .link:focus-visible {
+  outline-offset: -4px;
+}
+/* marks where the bar starts, so PageJump knows when it is stuck (takes no room) */
+.sentinel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.aside {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 40;
+    border-block: 1px solid var(--color-line);
+    background: #fff;
+    transition: box-shadow 0.2s ease;
+  }
+  /* stuck under the header: a soft shadow over the content it floats on */
+  .bar[data-stuck] {
+    box-shadow: 0 10px 18px -12px rgb(21 18 58 / 0.3);
+  }
+  /* --bar-h tall with its two hairlines */
+  .bar .in {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    min-height: calc(var(--bar-h, 56px) - 2px);
+  }
+  .bar .list {
+    flex: 1 1 auto;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 6px 28px 6px 0;
+    scroll-padding-inline: 0 28px;
+    /* fade the chips out at the strip's edge, where they scroll */
+    -webkit-mask: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    mask: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+  .bar .link {
+    min-height: 40px;
+    padding: 0 13px;
+    font-size: 0.92rem;
+  }
+}
+/*
+ * Every chip fits from 1024px (the longest strip, eight chips, is about 880px): the aside ("Send your plans") joins
+ * from 1280px, the "On this page" label from 1366px and the aside's price text from 1440px.
+ */
+@media (min-width: 1280px) {
+  .aside {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--color-navy);
+  }
+}
+@media (max-width: 1439px) {
+  .aside [data-bar-price] {
+    display: none;
+  }
+}
+/* the label: visible on phones (above the row) and from 1366px (beside it), read by screen readers in between */
+@media (min-width: 1024px) and (max-width: 1365px) {
+  .bar .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+@media (min-width: 1366px) {
+  .bar .label {
+    flex: none;
+  }
+}
+
+/* ---------- rail ---------- */
+.rail .label {
+  margin-bottom: 10px;
+}
+.rail .list {
+  display: grid;
+  gap: 2px;
+}
+.rail .link {
+  justify-content: space-between;
+  padding: 8px 12px 8px 14px;
+  border-left: 3px solid var(--color-line);
+  border-radius: 0 10px 10px 0;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+.rail .link:hover {
+  background: var(--color-alt);
+  color: var(--color-navy);
+}
+.rail .link[aria-current] {
+  border-left-color: var(--color-amber);
+  background: var(--color-tint);
+  color: var(--color-navy);
+}
+.rail .link:focus-visible {
+  outline-offset: -3px;
+}
+@media (min-width: 1024px) {
+  .rail {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    max-height: calc(100vh - var(--header-h) - 48px);
+    overflow: auto;
+  }
+}
+
+/* as specific as the variant rules above, so the system colors win */
+@media (forced-colors: active) {
+  .bar .link[aria-current],
+  .rail .link[aria-current] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

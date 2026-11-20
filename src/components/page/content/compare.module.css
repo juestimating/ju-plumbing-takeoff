@@ -1,0 +1,563 @@
+/*
+ * Compare views (Compare.tsx, CompareFit.tsx): cards side by side, the "or" coin, the quantity or material strip
+ * (native radios, styled and switched with :has()), the fit switch, the range markers picker and the measured or
+ * marked motif. Segmented switches are the home bid week toggle on a light section. Every readout sits beside its next
+ * step (sayRow), stacked so a pick never moves anything.
+ */
+.compare {
+  display: grid;
+}
+
+/* ---------- cards ---------- */
+.cards {
+  display: grid;
+  gap: 20px;
+}
+/* stacked pair: the coin (a zero-height row) straddles the seam, 10px into each card */
+.cards[data-n="2"] {
+  row-gap: 12px;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(24px, 2.6vw, 36px);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.col h3 {
+  margin: 0 0 10px;
+  font-size: var(--fs-card, 1.2rem);
+}
+.col > p {
+  margin: 0;
+  color: var(--color-mut);
+}
+.col > p strong {
+  color: var(--color-ink);
+}
+.points {
+  margin-top: 18px;
+  font-size: 0.97rem;
+}
+.col > :has(+ .foot) {
+  margin-bottom: 18px;
+}
+.foot {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: auto 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed color-mix(in srgb, var(--color-mut) 35%, transparent);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.col > p.foot {
+  color: var(--color-ink);
+}
+.tile {
+  margin-bottom: 18px;
+}
+.noteIcon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  background: var(--color-amber-ink);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/><path d='M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8'/></svg>") center / contain no-repeat;
+}
+
+/* the "or" coin on the seam (between the stacked cards on phones) */
+.coin {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  margin-block: -22px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  box-shadow: 0 0 0 5px #fff;
+  font: 800 0.95rem / 1 var(--font-display);
+  color: var(--color-navy);
+}
+:global(.tone-alt) .coin {
+  box-shadow: 0 0 0 5px var(--color-alt);
+}
+@media (width >= 900px) {
+  /* each card of a pair keeps its own height: a short card is not stretched into an empty one */
+  .cards[data-n="2"] {
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+    align-items: start;
+    gap: 0 18px;
+  }
+  .cards[data-n="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .coin {
+    margin-block: 0;
+  }
+}
+
+/* ---------- segmented switch (quantity or material, how often you bid) ---------- */
+.switchRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 18px;
+  margin-bottom: 18px;
+}
+.ask {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.toggle {
+  position: relative;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  padding: 4px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+:global(.tone-light) .toggle {
+  background: var(--color-alt);
+}
+@media (width < 560px) {
+  .toggle {
+    flex: 1 1 100%;
+  }
+}
+.thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 2);
+  border-radius: 999px;
+  background: var(--color-amber);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-amber) 35%, transparent);
+}
+.three .thumb {
+  width: calc((100% - 8px) / 3);
+}
+.seg {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 4px 18px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--color-navy);
+  cursor: pointer;
+  user-select: none;
+}
+.seg:has(input:checked) {
+  color: var(--color-on-accent);
+}
+.seg:has(input:focus-visible) {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.toggle:has(input[value="mto"]:checked) .thumb,
+.fit:has(input[value="1"]:checked) .thumb {
+  transform: translateX(100%);
+}
+.fit:has(input[value="2"]:checked) .thumb {
+  transform: translateX(200%);
+}
+.fit:not(:has(input:checked)) .thumb {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .thumb {
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.2s ease;
+  }
+  .seg {
+    transition: color 0.2s ease;
+  }
+}
+
+/* the answer under a switch beside its next step: every line and every route in one cell, so the cards below never
+   move (the routes cell keeps its widest route's size; hidden routes are invisible, so they take no focus) */
+.sayRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+  max-width: 1080px;
+  margin: 14px auto 26px;
+}
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 20px;
+}
+.routes {
+  display: grid;
+}
+.routes > * {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: center;
+}
+/* the checked radio picks the line and the route that show (the hint and the rest route until one is checked) */
+.fit :is(.say, .routes) > [data-i] {
+  visibility: hidden;
+}
+.fit:not(:has(input:checked)) :is(.say, .routes) > [data-i="none"],
+.fit:has(input[value="0"]:checked) :is(.say, .routes) > [data-i="0"],
+.fit:has(input[value="1"]:checked) :is(.say, .routes) > [data-i="1"],
+.fit:has(input[value="2"]:checked) :is(.say, .routes) > [data-i="2"] {
+  visibility: visible;
+}
+.say {
+  display: grid;
+  flex: 0 1 640px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--r-inner, 12px);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+:global(.tone-light) .say {
+  background: var(--color-alt);
+  box-shadow: none;
+}
+.say::before {
+  content: "";
+  grid-area: 1 / 1;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  background: var(--color-amber-ink);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m9 11-6 6v3h9l3-3'/><path d='m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4'/></svg>") center / contain no-repeat;
+}
+.say > span {
+  grid-column: 2;
+}
+.fit .say > span {
+  grid-row: 1;
+}
+@supports selector(:has(*)) {
+  .qto .say > span {
+    grid-row: 1;
+  }
+  .qto:has(input[value="qto"]:checked) :is(.say, .routes) [data-mode="mto"],
+  .qto:has(input[value="mto"]:checked) :is(.say, .routes) [data-mode="qto"] {
+    visibility: hidden;
+  }
+}
+
+/* the picked output's card gets the amber ring */
+.compare:has(input[value="qto"]:checked) .col[data-mode="qto"],
+.compare:has(input[value="mto"]:checked) .col[data-mode="mto"],
+.fit:has(input[value="0"]:checked) .col[data-i="0"],
+.fit:has(input[value="1"]:checked) .col[data-i="1"],
+.fit:has(input[value="2"]:checked) .col[data-i="2"] {
+  border-color: var(--color-amber);
+  box-shadow:
+    0 0 0 1px var(--color-amber),
+    var(--shadow-card);
+}
+.fits {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-amber);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-on-accent);
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.fit:has(input[value="0"]:checked) .col[data-i="0"] .fits,
+.fit:has(input[value="1"]:checked) .col[data-i="1"] .fits,
+.fit:has(input[value="2"]:checked) .col[data-i="2"] .fits {
+  opacity: 1;
+  transform: none;
+}
+@media (forced-colors: active) {
+  .compare:has(input[value="qto"]:checked) .col[data-mode="qto"],
+  .compare:has(input[value="mto"]:checked) .col[data-mode="mto"],
+  .fit:has(input[value="0"]:checked) .col[data-i="0"],
+  .fit:has(input[value="1"]:checked) .col[data-i="1"],
+  .fit:has(input[value="2"]:checked) .col[data-i="2"] {
+    outline: 3px solid Highlight;
+  }
+}
+.caption {
+  margin: 16px 0 0;
+  font-size: 0.86rem;
+  text-align: center;
+  color: var(--color-mut);
+}
+
+/* ---------- quantity or material strip: one workbook line ---------- */
+.qto {
+  margin-bottom: 8px;
+}
+.strip {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) repeat(3, minmax(0, 1fr)) minmax(0, 0.8fr) minmax(0, 1.8fr);
+  max-width: 980px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #c8d0e0;
+  border-radius: var(--r-inner, 12px);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+.cell {
+  display: grid;
+  grid-row: 1;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+  border-right: 1px solid #e1e6f0;
+}
+/* every cell in its own column: the "Stops at Net" marker overlaps Allowance and Order instead of taking a column */
+.cell:nth-child(1) { grid-column: 1; }
+.cell:nth-child(2) { grid-column: 2; }
+.cell:nth-child(3) { grid-column: 3; }
+.cell:nth-child(4) { grid-column: 4; }
+.cell:nth-child(5) { grid-column: 5; }
+.cell:nth-child(6) { grid-column: 6; }
+.cell[data-col="Buy as"] {
+  border-right: 0;
+}
+.cellHead {
+  padding: 7px 12px;
+  border-bottom: 1px solid #e1e6f0;
+  background: #f5f7fb;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.cellVal {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+.cell:is([data-col="Net"], [data-col="Allowance"], [data-col="Order"]) .cellVal {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.stop {
+  display: none;
+}
+@supports selector(:has(*)) {
+  /* quantity takeoff: the line stops at Net, the rest is hatched */
+  .qto:has(input[value="qto"]:checked) .cell[data-col="Net"] .cellVal {
+    box-shadow: inset -3px 0 0 var(--color-amber);
+  }
+  .qto:has(input[value="qto"]:checked) .cell:is([data-col="Allowance"], [data-col="Order"], [data-col="Buy as"]) .cellVal {
+    background: repeating-linear-gradient(45deg, rgb(31 27 80 / 0.07) 0 6px, transparent 6px 12px);
+    opacity: 0.4;
+  }
+  .qto:has(input[value="qto"]:checked) .stop {
+    z-index: 1;
+    display: grid;
+    grid-row: 1;
+    grid-column: 3 / 5;
+    align-self: end;
+    place-items: center;
+    margin: 6px;
+    padding: 4px 8px;
+    border: 1px dashed var(--color-amber-ink);
+    border-radius: 8px;
+    background: var(--color-tint);
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--color-amber-ink);
+  }
+  /* material takeoff: carried on to the order quantity and how it is bought */
+  .qto:has(input[value="mto"]:checked) .cell:is([data-col="Order"], [data-col="Buy as"]) .cellVal {
+    background: var(--color-tint);
+    font-weight: 800;
+    color: var(--color-amber-ink);
+  }
+}
+@media (width < 640px) {
+  /* Item across the top, then Net, Allowance, Order, then Unit and Buy as */
+  .strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cell {
+    border-bottom: 1px solid #e1e6f0;
+  }
+  .cell:nth-child(1) { grid-area: 1 / 1 / 2 / 4; border-right: 0; }
+  .cell:nth-child(2) { grid-area: 2 / 1; }
+  .cell:nth-child(3) { grid-area: 2 / 2; }
+  .cell:nth-child(4) { grid-area: 2 / 3; border-right: 0; }
+  .cell:nth-child(5) { grid-area: 3 / 1; border-bottom: 0; }
+  .cell:nth-child(6) { grid-area: 3 / 2 / 4 / 4; border-bottom: 0; }
+  @supports selector(:has(*)) {
+    .qto:has(input[value="qto"]:checked) .stop {
+      grid-row: 2;
+      grid-column: 2 / 4;
+    }
+  }
+}
+
+/* ---------- range: the low, likely and high markers as the picker over the three cards ---------- */
+.fit[data-look="range"] .switchRow {
+  flex-direction: column;
+  gap: 10px;
+}
+.marks {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+/* the line from the low dot to the high dot, through the dots' centers (6px padding + half of the 32px dot box) */
+.marks::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: calc((100% - 48px) / 6);
+  right: calc((100% - 48px) / 6);
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-navy) 22%, transparent), var(--color-amber), color-mix(in srgb, var(--color-navy) 22%, transparent));
+}
+.mark {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 4px;
+  border-radius: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-mut);
+  cursor: pointer;
+  user-select: none;
+}
+/* a fixed 32px box: the picked dot grows by scale only, so the row never changes height */
+.dot {
+  width: 32px;
+  height: 32px;
+  border: 5px solid var(--color-navy);
+  border-radius: 50%;
+  background: #fff;
+  transform: scale(0.7);
+}
+.mark:has(input:checked) {
+  color: var(--color-navy);
+}
+.mark:has(input:checked) .dot {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-amber) 25%, transparent);
+  transform: none;
+}
+.mark:has(input:focus-visible) {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .mark:not(:has(input:checked)):hover .dot {
+    border-color: var(--color-amber-ink);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .dot {
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+}
+@media (width < 900px) {
+  .marks {
+    gap: 12px;
+  }
+  .marks::before {
+    left: calc((100% - 24px) / 6);
+    right: calc((100% - 24px) / 6);
+  }
+}
+
+/* ---------- measured or marked: a solid run, and a run that ends in a dashed handoff flag ---------- */
+.cards[data-view="marked"] .col {
+  overflow: hidden;
+}
+.cards[data-view="marked"] .col::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--color-navy);
+}
+.cards[data-view="marked"] .col[data-i="1"]::before {
+  right: 34px;
+  background: repeating-linear-gradient(90deg, var(--color-navy) 0 12px, transparent 12px 20px);
+}
+.cards[data-view="marked"] .col[data-i="1"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 16px;
+  width: 14px;
+  height: 26px;
+  background: var(--color-amber);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
+}
+
+@media (forced-colors: active) {
+  .noteIcon,
+  .say::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}

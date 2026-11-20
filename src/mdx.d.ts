@@ -1,0 +1,7 @@
+declare module "*.mdx" {
+  import type { ComponentType } from "react";
+  import type { GuideMeta } from "@/content/types";
+  export const meta: GuideMeta;
+  const Content: ComponentType<Record<string, unknown>>;
+  export default Content;
+}

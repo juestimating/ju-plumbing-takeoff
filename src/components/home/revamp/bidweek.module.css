@@ -1,0 +1,524 @@
+/*
+ * Why outsource (alt section): reasons on the left, the bid week board on the right, and an honest
+ * "when it isn't worth it" note across the bottom. Both board states are in the HTML; data-mode on the figure picks
+ * the one on screen, and the switch is CSS transitions only (none at all under reduced motion).
+ * Builder D owns this file.
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(36px, 4.4vw, 72px);
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+  }
+}
+
+/* ---------- reasons ---------- */
+.reasons {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reason {
+  padding: 18px 22px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card);
+  background: #fff;
+}
+/* A short amber pipe run marks each reason, like the legend lines in the system explorer. */
+.reason h3 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 4px;
+  font-size: 1.08rem;
+}
+/* Centered on the first line, so a title that wraps on a small phone keeps its marker on line one. */
+.reason h3::before {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 3px;
+  margin-top: calc(0.5lh - 1.5px);
+  border-radius: 2px;
+  background: var(--color-amber-ink);
+}
+.reason p {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  color: var(--color-mut);
+}
+
+/* ---------- bid week board ---------- */
+.board {
+  --gap: clamp(4px, 0.7vw, 10px);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin: 0;
+  padding: clamp(16px, 2.2vw, 32px);
+  border-radius: var(--r-panel);
+  background:
+    radial-gradient(520px 280px at 100% 0%, var(--color-navy-2), transparent 70%),
+    var(--color-navy);
+  color: var(--color-onnavy);
+  box-shadow: var(--shadow-pop);
+}
+.board :focus-visible {
+  outline-color: var(--color-amber);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.ask {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+/* Segmented switch: two native radios, an amber thumb that slides under the checked one. */
+.toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+@media (max-width: 479px) {
+  .toggle {
+    flex: 1 1 100%;
+  }
+}
+.thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: var(--color-amber);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-amber) 35%, transparent);
+}
+.board[data-mode="ju"] .thumb {
+  transform: translateX(100%);
+}
+.seg {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+.board[data-mode="own"] .seg:first-of-type,
+.board[data-mode="ju"] .seg:last-of-type {
+  color: var(--color-on-accent);
+}
+.seg:has(input:focus-visible) {
+  outline: 3px solid var(--color-amber);
+  outline-offset: 3px;
+}
+
+/* Week: five day lanes behind the bid cards, which sit in the same five columns. The bid cards query its width. */
+.cal {
+  container: week / inline-size;
+  display: grid;
+  margin-top: 22px;
+}
+.days,
+.bids {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: var(--gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.days li {
+  position: relative;
+  padding-top: 10px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.04);
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-onnavy-mut);
+}
+.days li:last-child {
+  background: color-mix(in srgb, var(--color-amber) 9%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber) 32%, transparent);
+  color: var(--color-amber);
+}
+.due {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  translate: -50% 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-amber);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  color: var(--color-on-accent);
+}
+.bids {
+  row-gap: 12px;
+  padding-block: 38px 42px;
+}
+
+/* Each card starts on the day its invitation lands (inline grid-column-start) and runs to Friday. */
+.bid {
+  grid-column-end: -1;
+  position: relative;
+  transform-origin: left center;
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-left: 4px solid var(--color-amber);
+  border-radius: var(--r-inner);
+  background-color: var(--color-navy-2);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-navy-d) 60%, transparent);
+  color: #fff;
+}
+.board[data-mode="ju"] .bid {
+  border-color: color-mix(in srgb, var(--color-amber) 42%, transparent);
+  border-left-color: var(--color-amber);
+}
+.board[data-mode="own"] .bid[data-fate="passed"] {
+  border-style: dashed;
+  border-color: rgb(255 255 255 / 0.26);
+  background-color: var(--color-navy);
+  box-shadow: none;
+  opacity: 0.8;
+  transform: scale(0.97);
+}
+
+.bidIn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 12px;
+}
+.name {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+}
+.meta {
+  grid-column: 1;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--color-onnavy-mut);
+}
+.line {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--color-onnavy);
+}
+.line > * {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.line svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--color-amber);
+}
+.stamp {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-items: end;
+}
+/* Flex wrappers, so a wrapped pill adds no line box and every card's stamp row is the same height. */
+.stamp > * {
+  display: flex;
+}
+/* A narrow week (phones, and the two-column layout near 1024px) puts every stamp under its text, all three together. */
+@container week (max-width: 500px) {
+  .bidIn {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stamp {
+    grid-column: 1;
+    grid-row: auto;
+    justify-items: start;
+    margin-top: 10px;
+  }
+}
+
+/* Both states share one grid cell, so the switch never changes the card's height. */
+.swap {
+  display: grid;
+}
+.swap > * {
+  grid-area: 1 / 1;
+}
+.board[data-mode="own"] .ju,
+.board[data-mode="ju"] .own {
+  visibility: hidden;
+  opacity: 0;
+}
+.board[data-mode="own"] .ju {
+  transform: translateY(6px);
+}
+.board[data-mode="ju"] .own {
+  transform: translateY(-6px);
+}
+.board[data-mode="own"] .stamp > .ju,
+.board[data-mode="ju"] .stamp > .own {
+  transform: scale(0.6);
+}
+
+.priced,
+.passed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.priced {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+.passed {
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+  color: var(--color-onnavy);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.05);
+}
+.summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-weight: 700;
+  color: #fff;
+}
+.count {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-amber);
+}
+.meter {
+  display: inline-flex;
+  gap: 6px;
+}
+.meter i {
+  display: block;
+  width: 30px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.16);
+}
+.meter i[data-on] {
+  background: var(--color-amber);
+}
+.story {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--color-onnavy);
+}
+.cap {
+  margin: 14px 0 0;
+  font-size: 0.82rem;
+  color: var(--color-onnavy-mut);
+}
+
+/* The switch: cards settle in a stagger, the line swaps, then the stamp pops. */
+@media (prefers-reduced-motion: no-preference) {
+  .thumb {
+    transition: transform 0.3s var(--ease);
+  }
+  .seg {
+    transition: color 0.2s ease;
+  }
+  .bid {
+    --d0: calc(var(--i) * 90ms);
+    --d1: calc(var(--i) * 90ms + 140ms);
+    --d2: calc(var(--i) * 90ms + 280ms);
+    transition:
+      transform 0.35s var(--pop) var(--d0),
+      opacity 0.3s ease var(--d0),
+      background-color 0.3s ease var(--d0),
+      border-color 0.3s ease var(--d0),
+      box-shadow 0.3s ease var(--d0);
+  }
+  .line > * {
+    transition:
+      opacity 0.25s ease var(--d1),
+      transform 0.3s var(--ease) var(--d1),
+      visibility 0s linear var(--d1);
+  }
+  .stamp > * {
+    transition:
+      opacity 0.2s ease var(--d2),
+      transform 0.32s var(--pop) var(--d2),
+      visibility 0s linear var(--d2);
+  }
+  .board[data-mode="own"] .line > .ju,
+  .board[data-mode="ju"] .line > .own,
+  .board[data-mode="own"] .stamp > .ju,
+  .board[data-mode="ju"] .stamp > .own {
+    transition:
+      opacity 0.16s ease var(--d0),
+      transform 0.16s ease var(--d0),
+      visibility 0s linear calc(var(--d0) + 0.16s);
+  }
+  .story > * {
+    transition:
+      opacity 0.3s ease 0.4s,
+      transform 0.3s var(--ease) 0.4s,
+      visibility 0s linear 0.4s;
+  }
+  .board[data-mode="own"] .story > .ju,
+  .board[data-mode="ju"] .story > .own {
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease,
+      visibility 0s linear 0.16s;
+  }
+  .meter i {
+    transition: background-color 0.25s ease calc(var(--i) * 90ms + 280ms);
+  }
+  .count {
+    animation: count-pop 0.4s var(--pop) 0.45s backwards;
+  }
+  /* The ring is painted once; only its opacity and scale animate, so the pulse stays on the compositor. */
+  .board[data-nudge] .seg:last-of-type::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-amber) 70%, transparent);
+    opacity: 0;
+    animation: nudge 1.5s ease-out 0.3s 3;
+  }
+}
+@keyframes count-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+@keyframes nudge {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.12, 1.5);
+  }
+}
+
+/* ---------- the honest note ---------- */
+.note {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 14px 20px;
+  margin-top: clamp(36px, 4vw, 56px);
+  padding: clamp(20px, 2.6vw, 32px);
+  border: 1px solid color-mix(in srgb, var(--color-amber) 40%, transparent);
+  border-radius: 20px;
+  background: var(--color-tint);
+}
+.note :global(.hr-tile) {
+  background: #fff;
+}
+.note h3 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+.note p {
+  margin: 0;
+  max-width: 70ch;
+}
+.noteSide {
+  grid-column: 2;
+}
+/* Phones: the tile sits above the text so the copy gets the full width. */
+@media (max-width: 639px) {
+  .note {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .noteSide {
+    grid-column: auto;
+  }
+}
+.reason a,
+.note a {
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+@media (min-width: 1024px) {
+  .note {
+    grid-template-columns: auto minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px 32px;
+  }
+  .noteSide {
+    grid-column: auto;
+    padding-left: 32px;
+    border-left: 1px solid color-mix(in srgb, var(--color-amber) 40%, transparent);
+  }
+}

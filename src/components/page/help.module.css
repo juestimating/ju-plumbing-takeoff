@@ -1,0 +1,198 @@
+/*
+ * "Still have questions?" card (the home FAQ help card) and the OpenNow status line. The card is navy on a 22px drafting
+ * grid; its contact icons are CSS masks (no SVG markup on every page).
+ */
+.card {
+  width: 100%;
+  padding: clamp(22px, 2.4vw, 32px);
+  border-radius: var(--r-card, 20px);
+  background-color: var(--color-navy);
+  background-image:
+    radial-gradient(420px 240px at 100% 0%, rgb(255 255 255 / 0.09), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size:
+    auto,
+    22px 22px,
+    22px 22px;
+  box-shadow: var(--shadow-pop);
+}
+/* on a navy section the card keeps an edge */
+:global(.tone-dark) .card {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  box-shadow: none;
+}
+.card[data-compact] {
+  padding: 20px;
+}
+.top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-feature, 1.4rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.text {
+  margin: 4px 0 0;
+  font-size: 0.97rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  color: var(--color-onnavy);
+}
+.contact {
+  display: grid;
+  gap: 2px;
+  margin: 20px 0 22px;
+  padding: 16px 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  list-style: none;
+  font-size: 0.97rem;
+}
+.contact li,
+.contact a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  min-width: 0;
+}
+.contact li {
+  color: var(--color-onnavy);
+}
+.contact a {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.contact a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-underline-offset: 4px;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.hours {
+  display: grid;
+  padding-block: 6px;
+}
+.ic {
+  position: relative;
+  flex: none;
+  align-self: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.08);
+}
+.ic::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 17px;
+  height: 17px;
+  margin: auto;
+  background: var(--color-amber);
+  -webkit-mask: var(--m) center / contain no-repeat;
+  mask: var(--m) center / contain no-repeat;
+}
+.ic[data-i="phone"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384'/></svg>");
+}
+.ic[data-i="mail"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7'/><rect x='2' y='4' width='20' height='16' rx='2'/></svg>");
+}
+.ic[data-i="clock"] {
+  --m: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>");
+}
+@media (forced-colors: active) {
+  .ic::before {
+    background: CanvasText;
+  }
+}
+
+/* Tablet: the card spans the full width, so the contact rows sit beside the greeting instead of under it. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "top contact"
+      "btn contact";
+    align-items: start;
+    column-gap: 36px;
+  }
+  .top {
+    grid-area: top;
+  }
+  .contact {
+    grid-area: contact;
+    margin: 0;
+    padding: 0 0 0 32px;
+    border-top: 0;
+    border-left: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .card > :global(.btn) {
+    grid-area: btn;
+    justify-self: start;
+    margin-top: 20px;
+  }
+}
+
+/* ---------- OpenNow: a reserved line that fills in after mount ---------- */
+.now {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 1.65em;
+  font-size: 0.9rem;
+  color: var(--color-mut);
+}
+:global(.tone-dark) .now {
+  color: var(--color-onnavy);
+}
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.now[data-state="open"] .dot {
+  background: var(--color-amber);
+  opacity: 1;
+}
+.badge {
+  display: inline-flex;
+  min-height: 28px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.badge:not([data-state]) {
+  padding: 0;
+  box-shadow: none;
+}
+.badge[data-state="open"] {
+  background: var(--color-tint);
+  box-shadow: none;
+  color: var(--color-amber-ink);
+}
+:global(.tone-dark) .badge {
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: none;
+  color: #fff;
+}

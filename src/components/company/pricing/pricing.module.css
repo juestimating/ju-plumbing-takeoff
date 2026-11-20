@@ -1,0 +1,369 @@
+/*
+ * /pricing: the price tables as cards and the includes receipt, plus the service link and the delivery clock the
+ * price finder shares. Module rules are unlayered, so they beat the layered globals.
+ */
+
+/* ---------- shared with the price finder ---------- */
+.svc {
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+.svc:hover {
+  text-decoration-color: var(--color-amber);
+}
+/* Delivery with a clock drawn by a CSS mask (no svg per row). A long line ("24–72 hours (larger sets confirmed at
+   intake)") wraps instead of overflowing. */
+.when {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: normal;
+}
+.when::before {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>") center / contain no-repeat;
+}
+@media (forced-colors: active) {
+  .when::before {
+    background: CanvasText;
+  }
+}
+
+/* ---------- price tables: one card per group ---------- */
+.groups {
+  display: grid;
+  gap: clamp(20px, 2.4vw, 28px);
+}
+.group {
+  overflow: hidden;
+}
+.prices {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.96rem;
+}
+.prices caption {
+  caption-side: top;
+  padding: 0;
+  text-align: left;
+}
+.capRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-alt);
+}
+/* the home pricing card's group tag */
+.tag {
+  flex: none;
+  padding: 3px 11px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(21 18 58 / 0.08);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+}
+/* one CSS motif per group: a dimension line, spreadsheet cells, two documents, a working week */
+.motif {
+  position: relative;
+  flex: 0 1 260px;
+  height: 22px;
+  margin-left: auto;
+  opacity: 0.7;
+}
+.motif[data-m="takeoff"] {
+  background:
+    linear-gradient(90deg, var(--color-navy) 0 2px, transparent 2px calc(100% - 2px), var(--color-navy) calc(100% - 2px)) 0 50% / 100% 18px no-repeat,
+    linear-gradient(var(--color-navy), var(--color-navy)) 0 50% / 100% 1.5px no-repeat,
+    repeating-linear-gradient(90deg, var(--color-navy) 0 1px, transparent 1px 12px) 0 50% / 100% 8px no-repeat;
+}
+.motif[data-m="estimate"] {
+  border: 1px solid #c8d0e0;
+  background:
+    linear-gradient(var(--color-tint), var(--color-tint)) 28px 0 / 14px 10px no-repeat,
+    repeating-linear-gradient(90deg, #c8d0e0 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(#c8d0e0 0 1px, transparent 1px 10px),
+    #fff;
+}
+.motif[data-m="bid"] {
+  flex-basis: 64px;
+}
+.motif[data-m="bid"]::before,
+.motif[data-m="bid"]::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  width: 18px;
+  height: 24px;
+  border: 1.5px solid var(--color-navy);
+  border-radius: 2px;
+  background: repeating-linear-gradient(transparent 0 5px, #c8d0e0 5px 6px) 3px 4px / 10px 15px no-repeat #fff;
+}
+.motif[data-m="bid"]::before {
+  right: 14px;
+}
+.motif[data-m="bid"]::after {
+  top: 3px;
+  right: 2px;
+}
+.motif[data-m="ongoing"] {
+  flex-basis: 130px;
+  border: 1px solid #c8d0e0;
+  background:
+    radial-gradient(circle, var(--color-amber) 0 3px, transparent 3.5px) 0 0 / 20% 100% repeat-x,
+    repeating-linear-gradient(90deg, transparent 0 calc(20% - 1px), #c8d0e0 calc(20% - 1px) 20%),
+    #fff;
+}
+.prices th,
+.prices td {
+  padding: 14px 20px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-line);
+}
+.prices thead th {
+  padding-block: 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.prices tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.prices tbody th {
+  font-weight: 700;
+}
+.c0 {
+  width: 30%;
+}
+.c1 {
+  width: 16%;
+}
+.c2 {
+  width: 26%;
+}
+.c3 {
+  width: 28%;
+}
+.cBest {
+  font-size: 0.94rem;
+  color: var(--color-mut);
+}
+/* the row being read: tint and an amber rule on its service cell (mouse only) */
+@media (hover: hover) {
+  .prices tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  .prices tbody tr:hover {
+    background: var(--color-tint);
+  }
+  .prices tbody tr:hover th {
+    box-shadow: inset 3px 0 var(--color-amber);
+  }
+}
+.note {
+  margin: 16px 0 0;
+  font-size: 0.92rem;
+  color: var(--color-mut);
+}
+/* phones: each row becomes a small card (service, price and delivery, then who it suits) */
+@media (max-width: 719px) {
+  .prices,
+  .prices tbody {
+    display: block;
+  }
+  .prices caption {
+    display: block;
+  }
+  .prices colgroup {
+    display: none;
+  }
+  .prices thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .prices tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .prices tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .prices tbody th,
+  .prices tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .prices tbody th,
+  .cBest {
+    flex: 1 1 100%;
+  }
+  .capRow {
+    padding: 12px 16px;
+  }
+}
+@media (max-width: 379px) {
+  .motif:not([data-m="bid"]) {
+    display: none;
+  }
+}
+
+/* ---------- what every price includes: a receipt ---------- */
+.ledgerGrid {
+  display: grid;
+  gap: 8px;
+}
+.ledgerGrid :global(.sec-head) {
+  margin-bottom: 20px;
+}
+@media (min-width: 1024px) {
+  .ledgerGrid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+    column-gap: clamp(40px, 5vw, 80px);
+  }
+  .ledgerGrid :global(.sec-head) {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    margin-bottom: 0;
+  }
+  .receiptShadow {
+    justify-self: end;
+    width: 100%;
+  }
+}
+/* the drop shadow sits on a wrapper, since the perforation mask would clip a box shadow */
+.receiptShadow {
+  max-width: 720px;
+  filter: drop-shadow(0 22px 34px rgb(21 18 58 / 0.12)) drop-shadow(0 1px 2px rgb(21 18 58 / 0.08));
+}
+.receipt {
+  padding: 30px clamp(18px, 2.6vw, 32px) 18px;
+  border-radius: 0 0 var(--r-card) var(--r-card);
+  background: #fff;
+  -webkit-mask: radial-gradient(circle 6px at 8px 0, #0000 98%, #000) 0 0 / 16px 100%;
+  mask: radial-gradient(circle 6px at 8px 0, #0000 98%, #000) 0 0 / 16px 100%;
+}
+.ledger,
+.ledger tbody,
+.ledger caption {
+  display: block;
+  width: 100%;
+}
+.ledger caption {
+  padding-bottom: 14px;
+  border-bottom: 2px dashed #c8d0e0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.ledger tr {
+  display: grid;
+  grid-template-columns: auto minmax(24px, 1fr) auto;
+  grid-template-areas:
+    "item lead status"
+    "means means means";
+  align-items: end;
+  gap: 6px 10px;
+  padding: 16px 0;
+  border-bottom: 1px dashed var(--color-line);
+}
+.ledger tr:last-child {
+  border-bottom: 0;
+}
+/* the dotted leader between the item and its status, as on a printed receipt */
+.ledger tr::after {
+  content: "";
+  grid-area: lead;
+  align-self: end;
+  margin-bottom: 0.7em;
+  border-bottom: 2px dotted #c8d0e0;
+}
+.ledger th,
+.ledger td {
+  padding: 0;
+  text-align: left;
+}
+.ledger th {
+  grid-area: item;
+  align-self: center;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-navy);
+}
+.ledger td:nth-child(2) {
+  grid-area: status;
+  align-self: center;
+}
+.ledger td:nth-child(3) {
+  grid-area: means;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+.ledger td:nth-child(3) a {
+  font-weight: 600;
+  color: var(--color-navy);
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 3px;
+}
+/* quoted on top: an outline pill, not a filled one */
+.extra {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--color-navy);
+}
+/* narrow phones: the status drops under the item, so a long item keeps its line */
+@media (max-width: 419px) {
+  .ledger tr {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "item"
+      "status"
+      "means";
+    align-items: start;
+  }
+  .ledger tr::after {
+    display: none;
+  }
+  .ledger td:nth-child(2) {
+    justify-self: start;
+  }
+}
+@media (forced-colors: active) {
+  .extra {
+    border: 1px solid CanvasText;
+  }
+}

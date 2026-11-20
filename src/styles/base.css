@@ -1,0 +1,120 @@
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--color-ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    color: var(--color-navy);
+    text-wrap: balance;
+    line-height: 1.15;
+    margin: 0 0 var(--s3);
+  }
+  h1 {
+    font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+    /* Tracking stays tight; word-spacing opens the word gaps. Loosening the tracking to -0.02em as well pushed phone
+       headlines onto an extra line (the home h1 at 375px went from 3 lines to 4). */
+    letter-spacing: -0.03em;
+    word-spacing: 0.08em;
+    font-weight: 800;
+  }
+  h2 {
+    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+  h3 {
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  p {
+    margin: 0 0 1em;
+  }
+  strong {
+    font-weight: 700;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  /* Navy ring by default (13:1 on white: the header, mega panels, mobile menu, sticky bar and form cards are white).
+     Amber only on navy surfaces. */
+  :focus-visible {
+    outline: 3px solid var(--color-navy-2);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .tone-dark :focus-visible,
+  .pg-hero :focus-visible,
+  .cta-band :focus-visible,
+  .proof :focus-visible,
+  .ft :focus-visible,
+  .mega-feature :focus-visible,
+  .takeaways :focus-visible {
+    outline-color: var(--color-amber);
+  }
+  /* White cards that sit inside dark surfaces go back to navy (keep this AFTER the rule above). */
+  .form-card :focus-visible,
+  .hero-card :focus-visible,
+  .sheet :focus-visible {
+    outline-color: var(--color-navy-2);
+  }
+
+  ::selection {
+    background: var(--color-amber);
+    color: var(--color-on-accent);
+  }
+
+  /* Tabular figures anywhere numbers line up */
+  table,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 1023px) {
+    body {
+      /* room for the sticky mobile call/quote bar */
+      padding-bottom: 76px;
+    }
+    html {
+      /* keyboard focus and in-page jumps stop above the sticky bar */
+      scroll-padding-bottom: 96px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

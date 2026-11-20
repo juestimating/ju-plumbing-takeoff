@@ -1,0 +1,24 @@
+/* Prose beside its plumbing artifact (ProseSplit.tsx): stacked on phones, side by side from 900px. */
+.split {
+  display: grid;
+  gap: clamp(32px, 4vw, 56px);
+}
+.copy {
+  min-width: 0;
+  font-size: 1.04rem;
+}
+.copy p:last-of-type {
+  margin-bottom: 0;
+}
+.copy :global(.hr-checks) {
+  margin-top: 18px;
+}
+.side {
+  min-width: 0;
+}
+@media (width >= 900px) {
+  .split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+  }
+}

@@ -1,0 +1,336 @@
+/*
+ * Pipe run (PipeRun.tsx): step cards hung on a pipe, the home process spools between numbered fittings. Riser (one
+ * centered column, pipe on the left) below 1280px and in the estimate build; one row of equal cards from 1280px.
+ * The pipe body takes the system color (--c) at 70%; on dark sections it is the home's white pipe. The amber flow
+ * moves with the scroll only (scroll-driven), and stands still under reduced motion.
+ */
+.run {
+  --gap: clamp(20px, 2vw, 28px);
+  --pipe: rgb(31 27 80 / 0.14);
+  --flange: rgb(31 27 80 / 0.3);
+  display: grid;
+  gap: var(--gap);
+  max-width: calc(72ch + 64px);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.run[data-c] {
+  --pipe: color-mix(in srgb, var(--c) 70%, transparent);
+  --flange: color-mix(in srgb, var(--c) 80%, var(--color-navy-d));
+}
+.run[data-tone="dark"] {
+  --pipe: rgb(255 255 255 / 0.16);
+  --flange: rgb(255 255 255 / 0.34);
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: 64px;
+}
+/* the numbered fitting: tint on light, solid amber on dark and when the step is hovered or focused */
+.node {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-tint);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber) 40%, transparent);
+  font: 800 0.95rem / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.node::before {
+  content: attr(data-n);
+}
+.step:hover .node,
+.step:focus-within .node,
+.run[data-tone="dark"] .node {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+
+.card {
+  flex: 1;
+  padding: clamp(20px, 2vw, 26px);
+}
+.card h3 {
+  margin: 0 0 8px;
+  font-size: var(--fs-card, 1.2rem);
+}
+.card p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--color-mut);
+}
+.run[data-tone="dark"] .card p {
+  color: var(--color-onnavy);
+}
+
+/* spool from this fitting down to the next one */
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 44px;
+  left: 12px;
+  width: 20px;
+  height: calc(100% - 44px + var(--gap));
+  background:
+    linear-gradient(180deg, var(--flange) 0 6px, transparent 6px calc(100% - 6px), var(--flange) calc(100% - 6px)),
+    linear-gradient(180deg, var(--color-amber) 0 6px, transparent 6px) 50% 0 / 2px 12px repeat-y,
+    linear-gradient(var(--pipe), var(--pipe)) 50% 0 / 10px 100% no-repeat;
+}
+
+/* ---------- one row from 1280px: fittings above the cards, spools across ---------- */
+@media (width >= 1280px) {
+  /* ponytail: one row for up to 5 steps, two rows of three for 6 (the longest method lists); 7+ would need a rule */
+  .run:not([data-riser]) {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    max-width: none;
+  }
+  .run[data-n="6"]:not([data-riser]) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: row;
+    row-gap: clamp(32px, 3vw, 44px);
+  }
+  .run[data-n="6"]:not([data-riser]) .step:nth-child(3)::after {
+    display: none;
+  }
+  .run:not([data-riser]) .step {
+    padding: 60px 0 0;
+  }
+  .run:not([data-riser]) .step:not(:last-child)::after {
+    top: 12px;
+    left: 52px;
+    width: calc(100% - 60px + var(--gap));
+    height: 20px;
+    background:
+      linear-gradient(90deg, var(--flange) 0 6px, transparent 6px calc(100% - 6px), var(--flange) calc(100% - 6px)),
+      linear-gradient(90deg, var(--color-amber) 0 6px, transparent 6px) 0 50% / 12px 2px repeat-x,
+      linear-gradient(var(--pipe), var(--pipe)) 0 50% / 100% 10px no-repeat;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .step:not(:last-child)::after {
+      animation: flow-down linear both;
+      animation-timeline: view();
+    }
+    @media (width >= 1280px) {
+      .run:not([data-riser]) .step:not(:last-child)::after {
+        animation-name: flow-right;
+      }
+    }
+  }
+}
+@keyframes flow-down {
+  to {
+    background-position:
+      0 0,
+      50% 96px,
+      50% 0;
+  }
+}
+@keyframes flow-right {
+  to {
+    background-position:
+      0 0,
+      96px 50%,
+      0 50%;
+  }
+}
+
+.cta {
+  margin: clamp(28px, 3vw, 40px) 0 0;
+}
+.run:not([data-riser]) + .cta {
+  text-align: center;
+}
+
+/* ---------- estimate build: the stack of band buttons beside the riser ---------- */
+.build {
+  display: grid;
+  gap: 28px;
+}
+.build .run {
+  max-width: none;
+  margin: 0;
+}
+.ask {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-mut);
+}
+.bands {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: band;
+}
+.bands li {
+  display: flex;
+  counter-increment: band;
+}
+.band {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--r-inner, 12px);
+  background: var(--color-navy-2);
+  font: 700 0.95rem / 1.3 var(--font-sans);
+  text-align: left;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+.band::before {
+  content: counter(band, decimal-leading-zero);
+  font: 800 0.82rem / 1 var(--font-display);
+  color: var(--color-amber);
+}
+.cap {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: right;
+  color: var(--color-mut);
+}
+/* on navy: glass bands, the home console look */
+.build[data-tone="dark"] .ask {
+  color: var(--color-onnavy);
+}
+.build[data-tone="dark"] .band {
+  border-color: rgb(255 255 255 / 0.14);
+  background: rgb(255 255 255 / 0.08);
+}
+.build[data-tone="dark"] .cap {
+  color: var(--color-onnavy-mut);
+}
+@media (width >= 1024px) {
+  .build {
+    grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.5fr);
+    gap: clamp(32px, 4vw, 64px);
+    align-items: start;
+  }
+  .stack {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 24px);
+  }
+  .band {
+    min-height: 52px;
+  }
+}
+
+/* A step and its band answer each other: the picked band, or the band of the step under the pointer or the keyboard,
+   wears the amber ring; the picked band's step (or the hovered band's) gets the amber card ring. No nudges. */
+.band[aria-pressed="true"],
+.build:has(.step:nth-child(1):is(:hover, :focus-within)) .bands li:nth-child(1) .band,
+.build:has(.step:nth-child(2):is(:hover, :focus-within)) .bands li:nth-child(2) .band,
+.build:has(.step:nth-child(3):is(:hover, :focus-within)) .bands li:nth-child(3) .band,
+.build:has(.step:nth-child(4):is(:hover, :focus-within)) .bands li:nth-child(4) .band,
+.build:has(.step:nth-child(5):is(:hover, :focus-within)) .bands li:nth-child(5) .band,
+.build:has(.step:nth-child(6):is(:hover, :focus-within)) .bands li:nth-child(6) .band,
+.build:has(.step:nth-child(7):is(:hover, :focus-within)) .bands li:nth-child(7) .band {
+  box-shadow: 0 0 0 3px var(--color-amber);
+}
+.build:has(.bands li:nth-child(1) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(1) .card,
+.build:has(.bands li:nth-child(2) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(2) .card,
+.build:has(.bands li:nth-child(3) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(3) .card,
+.build:has(.bands li:nth-child(4) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(4) .card,
+.build:has(.bands li:nth-child(5) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(5) .card,
+.build:has(.bands li:nth-child(6) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(6) .card,
+.build:has(.bands li:nth-child(7) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(7) .card {
+  border-color: var(--color-amber);
+  box-shadow:
+    0 0 0 1px var(--color-amber),
+    var(--shadow-card);
+}
+/* Forced colors drop the rings (box shadows). The pressed band is Highlight with forced-color-adjust: none (the
+   site-wide rule), which its step number inherits, so the number takes HighlightText instead of keeping its amber. */
+@media (forced-colors: active) {
+  .band[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+  .band[aria-pressed="true"]::before {
+    color: HighlightText;
+  }
+  .build:has(.bands li:nth-child(1) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(1) .card,
+  .build:has(.bands li:nth-child(2) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(2) .card,
+  .build:has(.bands li:nth-child(3) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(3) .card,
+  .build:has(.bands li:nth-child(4) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(4) .card,
+  .build:has(.bands li:nth-child(5) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(5) .card,
+  .build:has(.bands li:nth-child(6) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(6) .card,
+  .build:has(.bands li:nth-child(7) .band:is(:hover, [aria-pressed="true"])) .step:nth-child(7) .card {
+    outline: 3px solid Highlight;
+  }
+}
+
+/* Each band fills as its step scrolls into view, from 1024px where the stack rides beside the steps (an enhancement:
+   on phones, without scroll-driven animations, or under reduced motion, every band shows filled). The ring is a box
+   shadow the fill never touches, so a picked band rings before its step arrives. */
+@media (width >= 1024px) and (prefers-reduced-motion: no-preference) {
+  @supports (timeline-scope: --s1) {
+    .build {
+      timeline-scope: --s1, --s2, --s3, --s4, --s5, --s6, --s7;
+    }
+    .build .step:nth-child(1) { view-timeline-name: --s1; }
+    .build .step:nth-child(2) { view-timeline-name: --s2; }
+    .build .step:nth-child(3) { view-timeline-name: --s3; }
+    .build .step:nth-child(4) { view-timeline-name: --s4; }
+    .build .step:nth-child(5) { view-timeline-name: --s5; }
+    .build .step:nth-child(6) { view-timeline-name: --s6; }
+    .build .step:nth-child(7) { view-timeline-name: --s7; }
+    .band {
+      animation: band-fill linear both;
+      animation-range: entry 20% entry 100%;
+    }
+    .build[data-tone="dark"] .band {
+      animation-name: band-fill-dark;
+    }
+    .bands li:nth-child(1) .band { animation-timeline: --s1; }
+    .bands li:nth-child(2) .band { animation-timeline: --s2; }
+    .bands li:nth-child(3) .band { animation-timeline: --s3; }
+    .bands li:nth-child(4) .band { animation-timeline: --s4; }
+    .bands li:nth-child(5) .band { animation-timeline: --s5; }
+    .bands li:nth-child(6) .band { animation-timeline: --s6; }
+    .bands li:nth-child(7) .band { animation-timeline: --s7; }
+  }
+}
+@keyframes band-fill {
+  from {
+    border-color: var(--color-line);
+    background-color: #fff;
+    color: var(--color-mut);
+  }
+}
+@keyframes band-fill-dark {
+  from {
+    background-color: transparent;
+    color: var(--color-onnavy-mut);
+  }
+}

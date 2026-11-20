@@ -1,0 +1,406 @@
+/*
+ * Section B, the system explorer. From 1024px: a vertical tab list beside one large panel, like the JU Estimating
+ * "what we do" explorer. Below 1024px the same tab buttons become a sideways-scrolling chip row above the panel.
+ * The panel lays itself out by its own width (container queries), so one set of rules serves both arrangements.
+ * Panels and their contents come from SystemExplorer.tsx (server); the tab buttons from SystemTabs.tsx (client).
+ */
+
+.explorer {
+  display: grid;
+  gap: 14px;
+}
+
+/* ---------- tabs as a chip row (phones and tablets) ---------- */
+.tabs {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 6px var(--gutter) 8px;
+  overflow-x: auto;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tabs {
+    scroll-behavior: smooth;
+  }
+}
+.tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 5px 18px 5px 6px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-navy);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.tabIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 12%, white);
+  color: var(--c);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.tabArrow {
+  display: none;
+}
+/* The chip row shows no arrow, so the ring carries the selected state: amber ink keeps it above 3:1 on white and on
+   the section's grey. The desktop list goes back to bright amber below, where its amber-ink arrow carries the state. */
+.tab[aria-selected="true"] {
+  border-color: var(--color-amber-ink);
+  box-shadow:
+    0 0 0 1px var(--color-amber-ink),
+    var(--shadow-card);
+}
+.tab[aria-selected="true"] .tabIcon {
+  background: var(--c);
+  color: #fff;
+}
+@media (hover: hover) {
+  .tab:not([aria-selected="true"]):hover {
+    border-color: color-mix(in srgb, var(--c) 45%, var(--color-line));
+  }
+}
+
+/* ---------- tabs as a vertical list (desktop) ---------- */
+@media (min-width: 1024px) {
+  .explorer {
+    grid-template-columns: clamp(260px, 24vw, 340px) minmax(0, 1fr);
+    gap: 28px;
+  }
+  .tabs {
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .tab {
+    /* The list stretches to the panel's height, so both columns end on the same line. Its own minimum (9 x 64px plus
+       gaps) also sets the shortest panel, which keeps most panels the same height when the text wraps differently. */
+    flex: 1 1 auto;
+    gap: 14px;
+    min-height: 64px;
+    max-height: 84px;
+    padding: 8px 16px 8px 9px;
+    border-radius: 16px;
+    font-size: 1rem;
+    white-space: normal;
+    text-align: left;
+  }
+  .tab[aria-selected="true"] {
+    border-color: var(--color-amber);
+    box-shadow:
+      0 0 0 1px var(--color-amber),
+      var(--shadow-card);
+  }
+  .tabIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+  .tabLabel {
+    flex: 1;
+    min-width: 0;
+  }
+  .tabArrow {
+    display: block;
+    flex: none;
+    color: var(--color-amber-ink);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+  .tab[aria-selected="true"] .tabArrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Resting the mouse on a tab opens it (SystemTabs.tsx), so the hover cue is only the arrow fading in on the way to
+   selected. No nudge: a tab that moves under the pointer and back as it opens would wobble. */
+@media (min-width: 1024px) and (hover: hover) {
+  .tab:hover .tabArrow {
+    opacity: 0.5;
+    transform: none;
+  }
+  .tab[aria-selected="true"]:hover .tabArrow {
+    opacity: 1;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1240px) {
+  /* Below about 1214px the panel is narrower than 800px, so it stacks (see the container queries at the end) and runs
+     taller than the list: the list rides along beside it instead of stretching. The bound runs to 1240px because a
+     classic 15px scrollbar (Windows) keeps the panel stacked up to about 1235px; from 1214 to 1240px without one, the
+     side-by-side panel is about as tall as the unstretched list, so the extra band changes nothing there. */
+  .tabs {
+    position: sticky;
+    top: calc(var(--header-h) + 16px);
+    align-self: start;
+  }
+  .tab {
+    flex: none;
+  }
+}
+
+/* ---------- panel ---------- */
+.panels {
+  display: grid;
+  min-width: 0;
+}
+.panel {
+  container-type: inline-size;
+  padding: clamp(16px, 2.2vw, 28px);
+  border: 1px solid var(--color-line);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+.body {
+  display: grid;
+  gap: 20px;
+}
+
+/* drawing, framed like a sheet with a title strip */
+.media {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: var(--color-alt);
+}
+.media svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.media figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 14px;
+  border-top: 1px solid var(--color-line);
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-mut);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.head h3 {
+  margin: 0;
+  font-size: clamp(1.25rem, 1rem + 1.4cqi, 1.5rem);
+}
+.tile {
+  background: color-mix(in srgb, var(--c) 12%, white);
+  color: var(--c);
+}
+.blurb {
+  margin: 0 0 18px;
+  max-width: 52ch;
+  font-size: 1.05rem;
+  color: var(--color-mut);
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+/* a long system name wraps inside its button rather than pushing past the panel edge */
+.ctas > * {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+/* what we count: the first lines of the system's scope list, each with the unit it is bought and installed in */
+.counts {
+  padding: 16px 20px 6px;
+  border-radius: 16px;
+  background: var(--color-alt);
+}
+.countHead {
+  margin: 0 0 2px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.countList {
+  display: grid;
+  column-gap: 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.countList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-mut) 30%, transparent);
+}
+.countList li:last-child {
+  border-bottom: 0;
+}
+.countList :global(.hr-badge) {
+  flex: none;
+  justify-content: center;
+  min-width: 44px;
+  background: #fff;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+}
+.line {
+  position: relative;
+  padding-left: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+/* a short run of pipe in the system color, like a legend line on the drawing */
+.line::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--c);
+}
+
+/* motion: the card stays put, its contents settle in each time a tab opens (reduced motion turns it off in base.css).
+   Short and all at once: hovering down the list opens a panel every fraction of a second, so it must settle fast. */
+.media svg {
+  animation: sys-draw 0.25s ease both;
+}
+.summary,
+.ctas,
+.countList li {
+  animation: sys-rise 0.2s ease both;
+}
+@keyframes sys-draw {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sys-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- panel layout by panel width ---------- */
+@container (max-width: 559px) {
+  .ctas > * {
+    flex: 1 1 100%;
+    padding-inline: 18px;
+  }
+}
+@container (min-width: 560px) {
+  .countList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* five lines in two columns: the last one takes the whole row instead of leaving a hole */
+  .countList li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .countList li {
+    /* room for a two-line label in every row, so every system's panel is the same height and nothing jumps */
+    min-height: 62px;
+    padding-block: 8px;
+  }
+  /* and never more: a third line made Underground 22px taller, which slid the sticky tab list under the mouse at
+     1024-1240px. The full label stays in the HTML. */
+  .line {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+}
+@container (min-width: 800px) {
+  .body {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "media summary"
+      "media ctas"
+      "counts counts";
+    gap: 24px 32px;
+  }
+  .media {
+    grid-area: media;
+    align-self: start;
+  }
+  .summary {
+    grid-area: summary;
+    padding-top: 4px;
+  }
+  .head h3 {
+    /* scales with the panel, so the longest name ("Water heaters and equipment") stays on one line beside the drawing */
+    font-size: clamp(1.25rem, 3.2cqi - 6px, 1.6rem);
+  }
+  .ctas {
+    grid-area: ctas;
+    align-self: start;
+    /* the quote button sits under the badges, as wide as its label */
+    display: grid;
+    grid-template-columns: minmax(0, max-content);
+    gap: 10px;
+  }
+  .counts {
+    grid-area: counts;
+  }
+}
+

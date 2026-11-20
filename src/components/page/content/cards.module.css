@@ -1,0 +1,45 @@
+/* Type cards (TypeCards.tsx): 1, 2 from 640px, then the block's columns (3 by default) from 1024px. */
+.grid {
+  display: grid;
+  gap: clamp(16px, 1.8vw, 24px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.grid > li {
+  display: flex;
+}
+.card {
+  width: 100%;
+  padding: clamp(22px, 2.4vw, 30px);
+}
+.card h3 {
+  margin: 18px 0 8px;
+  font-size: var(--fs-card, 1.2rem);
+}
+.card > h3:first-child {
+  margin-top: 0;
+}
+.card p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--color-mut);
+}
+.card :global(.hr-tile)[data-c] {
+  background: color-mix(in srgb, var(--c) 12%, white);
+  color: var(--c-ink, var(--c));
+}
+@media (width >= 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (width >= 1024px) {
+  .grid[data-cols="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .grid[data-cols="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

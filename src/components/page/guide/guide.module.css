@@ -1,0 +1,499 @@
+/*
+ * Guide page template (guides SPEC 5): the hero with its drafting title block and hand-off card, the article grid with
+ * its sticky aside, the sidebar hand-off card and Read next. Template elements only: MDX elements are styled in
+ * src/styles/prose.css. Global pieces used: .pg-hero (focus and kicker colors), .kicker, .lead, .hr-card, .hr-badge,
+ * .btn, .arrow-link. Breakpoints: 600 (hero band), 640 (Read next), 1024, plus a short-screen rule for the sidebar.
+ */
+
+/* ---------- hero: the inner-page navy drafting surface (as PageHero) ---------- */
+.hero {
+  --pb: clamp(48px, 6vw, 80px);
+  overflow-x: clip;
+  padding-block: clamp(36px, 4.5vw, 64px) var(--pb);
+  background-color: var(--color-navy-d);
+  background-image:
+    radial-gradient(1000px 620px at 0% 0%, color-mix(in srgb, var(--color-navy-2) 85%, transparent), transparent 72%),
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+  background-size:
+    auto,
+    176px 176px,
+    176px 176px,
+    44px 44px,
+    44px 44px;
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Same columns and gap as the article grid, so the card lines up with the sidebar. Spare width goes into the gap, so
+   the card and the aside end on the header pill's edge like the full-width sections further down (the article keeps
+   its 740px); the amber glow sits behind the card (the container's right edge less half the card). */
+@media (min-width: 1024px) {
+  .hero {
+    background-image:
+      radial-gradient(520px 380px at calc(min(100% - var(--gutter), 50% + 720px) - 170px) 55%, rgb(245 180 0 / 0.1), transparent 70%),
+      radial-gradient(1000px 620px at 0% 0%, color-mix(in srgb, var(--color-navy-2) 85%, transparent), transparent 72%),
+      linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      176px 176px,
+      176px 176px,
+      44px 44px,
+      44px 44px;
+  }
+  .heroGrid {
+    grid-template-columns: minmax(0, 740px) minmax(280px, 340px);
+    column-gap: clamp(40px, 5vw, 96px);
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.kicker {
+  align-items: flex-start;
+  text-wrap: balance;
+}
+.kicker::before {
+  flex: none;
+  margin-top: calc(0.825em - 1px);
+}
+.h1 {
+  max-width: 20ch;
+  margin-bottom: 20px;
+  font-size: clamp(2.1rem, 1.2rem + 2.9vw, 3.4rem);
+  line-height: 1.08;
+}
+
+/* ---------- title block: the sheet's drafting title block instead of a byline ---------- */
+.tb {
+  display: inline-grid;
+  grid-auto-flow: column;
+  margin: 26px 0 0;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 12px;
+}
+.tb > div {
+  padding: 10px 16px;
+}
+.tb > div + div {
+  border-left: 1px solid rgb(255 255 255 / 0.14);
+}
+.tb dt {
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-onnavy-mut);
+}
+.tb dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+}
+@media (max-width: 639px) {
+  .tb {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: row;
+  }
+  .tb > div:nth-child(3) {
+    border-left: 0;
+  }
+  .tb > div:nth-child(n + 3) {
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .tb > div {
+    padding: 10px 14px;
+  }
+}
+
+/* ---------- hero hand-off card (1024 up); below, its strip is a paper band on the hero's bottom edge ---------- */
+/* No band ever crops the drawing (STRIP_SPAN, set on the band as --span): only paper, grid and bleeding mains go. */
+.card {
+  overflow: hidden;
+  margin: 28px calc(-1 * var(--gutter)) calc(-1 * var(--pb));
+}
+/* phones: the band takes the strip's own proportions, so the whole sheet shows edge to edge (81px tall at 390) */
+.band {
+  aspect-ratio: 720 / 150;
+  background: var(--color-alt);
+}
+.strip {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.body {
+  display: none;
+}
+/* 600 to 1023: the band stops at the card's 124px and the strip keeps that scale (124 / 150 px per unit) in the middle,
+   on the same paper and grid, its mains fading out towards the edges */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .band {
+    position: relative;
+    height: 124px;
+    aspect-ratio: auto;
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size: 16.5333px 16.5333px;
+    background-position: calc(50% + 7.8533px) -0.4133px;
+  }
+  .band .strip {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 595.2px;
+    height: 124px;
+    translate: -50% 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  }
+}
+@media (min-width: 1024px) {
+  .card {
+    container-type: inline-size;
+    margin: 0;
+    border-radius: var(--r-card, 20px);
+    background: #fff;
+    color: var(--color-ink);
+    box-shadow:
+      0 30px 70px -28px rgb(0 0 0 / 0.65),
+      0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  /* 124px, or lower for a strip whose drawing would not fit the card's width at that scale (the cut strip) */
+  .band {
+    height: min(124px, 100cqw * 150 / var(--span, 400));
+    aspect-ratio: auto;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .body {
+    display: grid;
+    gap: 12px;
+    padding: 20px 22px 22px;
+  }
+}
+.card :focus-visible {
+  outline-color: var(--color-navy-2);
+}
+.card :global(.btn-outline) {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+.card :global(.btn-outline:hover) {
+  background: rgb(31 27 80 / 0.06);
+}
+.label {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.title {
+  margin: -4px 0 0;
+  font: 800 1.3rem/1.25 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--color-navy);
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-mut);
+}
+.note svg {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--color-amber-ink);
+}
+.buttons {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* water runs along the strip's main while a card is hovered or focused; a strip on paper sets a navy --flow-c */
+.flow {
+  fill: none;
+  stroke: var(--flow-c, #fff);
+  stroke-width: 1.6;
+  stroke-dasharray: 2 13;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.card:is(:hover, :focus-within) .flow,
+.nextCard:is(:hover, :focus-within) .flow {
+  opacity: 0.95;
+  animation: flow 0.9s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -15;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* the hero strip's pipe runs trace themselves once (dashed vents and returns keep their dash pattern) */
+  .band path[fill="none"]:not([stroke-dasharray], [stroke-linecap="butt"]) {
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: draw 1.6s cubic-bezier(0.45, 0.05, 0.25, 1) 0.2s forwards;
+  }
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- article grid: aside first in the DOM (it is the navigator), sticky at every width ---------- */
+/* Below 1024 a block, not a grid: a grid item can only stick within its own grid row. */
+.aside {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+}
+.article {
+  margin-top: clamp(28px, 4vw, 40px);
+}
+@media (min-width: 1024px) {
+  .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 740px) minmax(280px, 340px);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "article aside"
+      "next aside";
+    column-gap: clamp(40px, 5vw, 96px);
+    justify-content: space-between;
+  }
+  .article {
+    grid-area: article;
+    margin-top: 0;
+  }
+  /* a column that never outgrows the screen: on a short one the rail's list scrolls inside the rail (nav.module.css
+     .scroll), so its head (minutes left, tick total, Clear) and the card stay in view */
+  .aside {
+    grid-area: aside;
+    align-self: start;
+    top: calc(var(--header-h) + 24px);
+    z-index: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: calc(100vh - var(--header-h) - 48px);
+    padding: 4px;
+    margin: -4px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}
+
+/* ---------- sidebar hand-off card (1024 up) ---------- */
+.handoff {
+  display: none;
+}
+/* Pinned at the aside's bottom edge if the aside ever has to scroll (a very short screen), so the quote button stays
+   in view while reading. */
+@media (min-width: 1024px) {
+  .handoff {
+    position: sticky;
+    bottom: 0;
+    flex: none;
+    display: grid;
+    gap: 10px;
+    padding: 20px 20px 16px;
+    box-shadow:
+      0 -12px 24px -18px rgb(21 18 58 / 0.3),
+      0 1px 2px rgb(21 18 58 / 0.04);
+  }
+}
+.hoTitle {
+  margin: 0;
+  font: 800 1.1rem/1.3 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.hoText {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+@media (max-height: 959px) {
+  .hoText {
+    display: none;
+  }
+}
+.hoLink {
+  justify-self: start;
+  min-height: 40px;
+}
+
+/* ---------- Read next: the home guide card, sideways from 640 ---------- */
+.next {
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+.next > :first-child {
+  justify-self: stretch;
+}
+@media (min-width: 1024px) {
+  .next {
+    grid-area: next;
+  }
+}
+.nextCard {
+  display: grid;
+  overflow: hidden;
+}
+@media (min-width: 640px) {
+  .nextCard {
+    container-type: inline-size;
+    grid-template-columns: minmax(0, 40%) minmax(0, 1fr);
+  }
+}
+.nextBand {
+  height: 120px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-alt);
+}
+/* Sideways the band is taller than wide, so "slice" would zoom the strip in. It is scaled instead so its drawing
+   (--span viewBox units, STRIP_SPAN) spans the band's width (--k px per unit; the band is 40cqw less its 1px border),
+   and sits in the middle on the same paper and grid, scaled and aligned with the strip's own grid lines, as a detail on
+   a larger sheet. */
+@media (min-width: 640px) {
+  .nextBand {
+    --k: calc((40cqw - 1px) / var(--span, 400));
+    position: relative;
+    overflow: hidden;
+    height: auto;
+    min-height: 168px;
+    border-right: 1px solid var(--color-line);
+    border-bottom: 0;
+    background-image:
+      linear-gradient(var(--color-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+    background-size:
+      100% calc(var(--k) * 20),
+      calc(var(--k) * 20) 100%;
+    background-position:
+      0 calc(50% + var(--k) * 14.5),
+      calc(50% + var(--k) * 9.5) 0;
+  }
+  .nextBand .strip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--k) * 720);
+    height: calc(var(--k) * 150);
+    translate: -50% -50%;
+  }
+}
+.nextBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 22px 20px;
+}
+.nextLabel {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.nextMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.nextTitle {
+  margin: 0;
+  font: 700 var(--fs-card, 1.2rem) / 1.3 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--r-card, 20px);
+}
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.nextCard:hover .nextTitle {
+  text-decoration: underline 2px var(--color-amber);
+  text-underline-offset: 4px;
+}
+.nextBlurb {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+.go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.go svg {
+  flex: none;
+  box-sizing: content-box;
+  padding: 9px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.nextCard:is(:hover, :focus-within) .go svg {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+.all {
+  min-height: 44px;
+}

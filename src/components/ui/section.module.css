@@ -1,0 +1,24 @@
+/* SectionHead layout="split": kicker and h2 on the left, the intro on the right, bottom aligned (from 1024px). */
+@media (min-width: 1024px) {
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+    grid-template-areas:
+      "k i"
+      "h i";
+    align-items: end;
+    column-gap: clamp(40px, 5vw, 80px);
+    max-width: none;
+  }
+  .split > :global(.kicker) {
+    grid-area: k;
+    justify-self: start;
+  }
+  .split > :is(h2, h3) {
+    grid-area: h;
+    margin-bottom: 0;
+  }
+  .split > :global(.sec-intro) {
+    grid-area: i;
+  }
+}

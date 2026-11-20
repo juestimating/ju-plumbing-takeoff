@@ -1,0 +1,456 @@
+/*
+ * Scope board (ScopeBoard.tsx, UnitFilter.tsx): the home explorer's "What we count" box at full length beside a count
+ * card. From 1024px the card (and the plumbing takeoff's drawing) rides along beside the rows; below, the card is a
+ * strip above them and the quote button is left to the sticky mobile bar. Rows: a legend line in the system color, the
+ * label, its note and the unit, lit by hover or keyboard focus. The unit filter is native radios as chips: the checked
+ * one dims the other rows through :has() (lines, badges and backgrounds fade; text stays at 4.5:1 or more).
+ * Service lists use the package grid (tiles) or the role card beside the duties (on navy where TONE says so).
+ */
+.board {
+  display: grid;
+  gap: 20px;
+}
+.aside {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+.main {
+  min-width: 0;
+}
+
+/* ---------- count card ---------- */
+.count {
+  display: grid;
+  gap: 18px;
+  padding: clamp(20px, 2.2vw, 28px);
+}
+/* every count in one cell: "12 line items" and each "7 of 12 line items" keep one size, so a pick moves nothing */
+.total {
+  display: grid;
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.v {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+/* the checked radio's count shows; All until a unit is checked */
+.v:not([data-for="all"]),
+.count:has(input:checked:not([value="all"])) .v[data-for="all"] {
+  visibility: hidden;
+}
+.count:has(input[value="EA"]:checked) .v[data-for="EA"],
+.count:has(input[value="LF"]:checked) .v[data-for="LF"],
+.count:has(input[value="SF"]:checked) .v[data-for="SF"],
+.count:has(input[value="CY"]:checked) .v[data-for="CY"],
+.count:has(input[value="LS"]:checked) .v[data-for="LS"] {
+  visibility: visible;
+}
+.n {
+  font: 800 clamp(2.6rem, 3.6vw, 3.4rem) / 1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+.filter {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+}
+.ask {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mut);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 5px 14px 5px 5px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  color: var(--color-mut);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+.code {
+  display: inline-grid;
+  place-items: center;
+  min-width: 40px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--color-alt);
+  font: 800 0.8rem / 1 var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--color-navy);
+}
+/* picked: a navy ring and the navy unit badge the matching rows wear too */
+.chip:has(input:checked) {
+  border-color: var(--color-navy);
+  box-shadow: 0 0 0 1px var(--color-navy);
+  color: var(--color-ink);
+}
+.chip:has(input:checked) .code {
+  background: var(--color-navy);
+  color: #fff;
+}
+.chip:has(input:focus-visible) {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .chip:not(:has(input:checked)):hover {
+    border-color: color-mix(in srgb, var(--color-amber) 45%, var(--color-line));
+  }
+}
+.badge {
+  flex: none;
+  justify-content: center;
+  min-width: 44px;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+}
+.quote {
+  display: grid;
+  gap: 10px;
+}
+.quote p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--color-mut);
+}
+
+/* ---------- rows ---------- */
+.rows {
+  display: grid;
+  margin: 0;
+  padding: 6px clamp(12px, 1.4vw, 18px);
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  list-style: none;
+}
+:global(.tone-light) .rows {
+  border-color: transparent;
+  background: var(--color-alt);
+}
+.row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+  padding: 12px 10px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-mut) 30%, transparent);
+  border-radius: 8px;
+  line-height: 1.45;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.row:last-child {
+  border-bottom: 0;
+}
+/* the legend line sits on the label's first line */
+.row > i {
+  margin-top: calc(0.5lh - 1.5px);
+  opacity: var(--line-o, 1);
+  transition: opacity 0.2s ease;
+}
+.row .badge {
+  background: var(--badge-bg, var(--color-alt));
+  box-shadow: var(--badge-ring, none);
+  color: var(--badge-c, var(--color-navy));
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+:global(.tone-light) .rows .badge {
+  background: var(--badge-bg, #fff);
+}
+.text {
+  min-width: 0;
+  font-weight: 600;
+  color: var(--text-c, var(--color-ink));
+  transition: color 0.2s ease;
+}
+.note {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--color-mut);
+}
+/* Is X included? The row under the pointer or the keyboard lights up, as on the home explorer. */
+.row:focus-within {
+  background: color-mix(in srgb, var(--color-amber) 9%, transparent);
+  box-shadow: inset 3px 0 0 var(--color-amber);
+}
+@media (hover: hover) {
+  .row:hover {
+    background: color-mix(in srgb, var(--color-amber) 9%, transparent);
+    box-shadow: inset 3px 0 0 var(--color-amber);
+  }
+}
+
+/* A unit pick: the rows it leaves out fade (line, badge, label to the muted ink); the rows it keeps get the picked
+   chip's navy badge. Nothing changes size. */
+.board:has(input[value="EA"]:checked) .row:not([data-u~="EA"]),
+.board:has(input[value="LF"]:checked) .row:not([data-u~="LF"]),
+.board:has(input[value="SF"]:checked) .row:not([data-u~="SF"]),
+.board:has(input[value="CY"]:checked) .row:not([data-u~="CY"]),
+.board:has(input[value="LS"]:checked) .row:not([data-u~="LS"]) {
+  --line-o: 0.2;
+  --badge-bg: transparent;
+  --badge-ring: inset 0 0 0 1px color-mix(in srgb, var(--color-mut) 35%, transparent);
+  --text-c: var(--color-mut);
+}
+.board:has(input[value="EA"]:checked) .row[data-u~="EA"],
+.board:has(input[value="LF"]:checked) .row[data-u~="LF"],
+.board:has(input[value="SF"]:checked) .row[data-u~="SF"],
+.board:has(input[value="CY"]:checked) .row[data-u~="CY"],
+.board:has(input[value="LS"]:checked) .row[data-u~="LS"] {
+  --badge-bg: var(--color-navy);
+  --badge-c: #fff;
+  --badge-fc: 2px solid Highlight;
+}
+
+.foot {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 16px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--color-mut);
+}
+.info,
+.check {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--color-tint);
+}
+.info::before,
+.check::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  background: var(--color-amber-ink);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 16v-4M12 8h.01'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 16v-4M12 8h.01'/></svg>") center / contain no-repeat;
+}
+.check::before {
+  inset: 8px;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");
+}
+
+/* ---------- service lists: the package grid ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px 20px;
+  border-radius: 16px;
+  background: var(--color-alt);
+  line-height: 1.45;
+}
+.tileTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tile .badge {
+  background: #fff;
+}
+:global(.tone-alt) .tile {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+:global(.tone-alt) .tile .badge {
+  background: var(--color-alt);
+}
+@media (width >= 1100px) {
+  .tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ---------- service lists: the role card beside the duties ---------- */
+.role {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: clamp(22px, 2.4vw, 30px);
+}
+.roleTitle {
+  margin: 4px 0 0;
+  font: 800 clamp(1.3rem, 1.8vw, 1.6rem) / 1.2 var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--color-navy);
+}
+.role :global(.btn) {
+  margin-top: 6px;
+}
+.duties {
+  counter-reset: duty;
+}
+.duties .row {
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  counter-increment: duty;
+}
+.duties .row > i {
+  margin-top: 0.2em;
+  font: 800 0.85rem / 1 var(--font-display);
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-amber-ink);
+}
+.duties .row > i::before {
+  content: counter(duty, decimal-leading-zero);
+  content: counter(duty, decimal-leading-zero) / "";
+}
+
+/* ---------- on navy ---------- */
+:global(.tone-dark) .rows {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.05);
+}
+:global(.tone-dark) .row {
+  border-bottom-color: rgb(255 255 255 / 0.16);
+}
+:global(.tone-dark) .row .badge {
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+:global(.tone-dark) .text,
+:global(.tone-dark) .roleTitle {
+  color: #fff;
+}
+:global(.tone-dark) .note,
+:global(.tone-dark) .foot {
+  color: var(--color-onnavy);
+}
+:global(.tone-dark) .duties .row > i {
+  color: var(--color-amber);
+}
+:global(.tone-dark) .info {
+  background: rgb(255 255 255 / 0.1);
+}
+:global(.tone-dark) .info::before {
+  background: var(--color-amber);
+}
+
+@media (forced-colors: active) {
+  .info::before,
+  .check::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  .chip .code {
+    background: transparent;
+    color: inherit;
+  }
+  .row .badge {
+    outline: var(--badge-fc, none);
+    outline-offset: 1px;
+  }
+}
+
+/* ---------- below 1024px: the count card (or the role card) is a strip above the rows ---------- */
+@media (width < 1024px) {
+  .count,
+  .role {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    padding: 14px 18px;
+  }
+  .n {
+    font-size: 2.2rem;
+  }
+  .filter {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    padding-top: 12px;
+  }
+  .quote {
+    display: none;
+  }
+  .role {
+    padding: 18px;
+  }
+  .role :global(.btn) {
+    flex: 1 1 100%;
+    margin-top: 0;
+  }
+}
+
+/* ---------- from 1024px: the card rides along beside the rows ---------- */
+@media (width >= 1024px) {
+  .board {
+    grid-template-columns: clamp(270px, 25vw, 360px) minmax(0, 1fr);
+    gap: clamp(28px, 3vw, 48px);
+    align-items: start;
+  }
+  /* the drawing needs the room: aside 40% */
+  .board[data-fig] {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+  .aside {
+    position: sticky;
+    top: calc(var(--header-h) + var(--bar-h, 0px) + 24px);
+  }
+  /* the unit chips as a list down the card */
+  .chip {
+    width: 100%;
+  }
+}
+/* two columns of rows when there is no drawing, in reading order */
+@media (width >= 1240px) {
+  .board:not([data-fig]) .rows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 28px;
+  }
+  .board:not([data-fig]) .row:nth-last-child(2):nth-child(odd) {
+    border-bottom: 0;
+  }
+}

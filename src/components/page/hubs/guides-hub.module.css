@@ -1,0 +1,329 @@
+/*
+ * /guides: the featured guide (hero card), the two reading routes (pipes whose stops are guides) and the shelf with its
+ * type filter, in the home guide-card language (drafted strip, badges, whole-card link, "Read the guide" arrow circle).
+ * Global pieces: .hr-card, .hr-badge, .sec-head. Motion only on hover or focus, and none under reduced motion.
+ */
+
+/* ---------- guide card (shelf and hero) ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: var(--color-ink);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.band {
+  overflow: hidden;
+  height: 140px;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 19px 19px 0 0;
+  background: var(--color-alt);
+}
+@media (min-width: 900px) {
+  .grid .band {
+    height: clamp(104px, 10.4vw, 150px);
+  }
+}
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* water moves along the strip's main while the card is hovered or focused */
+.flow {
+  fill: none;
+  stroke: var(--flow-c, #fff);
+  stroke-width: 1.6;
+  stroke-dasharray: 2 13;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.card:hover .flow,
+.card:focus-within .flow {
+  opacity: 0.95;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover .flow,
+  .card:focus-within .flow {
+    animation: flow 0.9s linear infinite;
+  }
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -15;
+  }
+}
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 26px 24px;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.title {
+  margin: 0;
+  font: 700 var(--fs-card, 1.2rem) / 1.3 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-navy);
+}
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+/* the whole card is the link; the focus ring traces the card */
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.card .stretch::after {
+  border-radius: var(--r-card, 20px);
+}
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.blurb {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--color-mut);
+}
+.go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+/* arrow circle and read-time clock are CSS masks (no SVG per card) */
+.goIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.goIcon::before,
+.time::before {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+}
+.time::before {
+  width: 14px;
+  height: 14px;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 6v6l4 2'/></svg>");
+}
+.card:hover .goIcon,
+.card:focus-within .goIcon {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+@media (forced-colors: active) {
+  .goIcon::before,
+  .time::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+.card:hover .title {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* hero: the featured guide, a white card on navy */
+.featured {
+  border: 0;
+  border-radius: var(--r-panel, 24px);
+  box-shadow:
+    0 30px 70px -28px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+}
+.featured .band {
+  height: 150px;
+  border-radius: 24px 24px 0 0;
+}
+.featured .stretch::after {
+  border-radius: var(--r-panel, 24px);
+}
+.featured :focus-visible {
+  outline-color: var(--color-navy-2);
+}
+.featured .title {
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem);
+}
+.start {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+@media (max-width: 639px) {
+  .featured .band {
+    height: 110px;
+  }
+  .body {
+    padding: 20px 20px 22px;
+  }
+}
+
+/* ---------- shelf: head with the filter on its right, then the cards ---------- */
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 40px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.top :global(.sec-head) {
+  flex: 1 1 520px;
+  margin-bottom: 0;
+}
+.filter {
+  display: grid;
+  gap: 8px;
+  max-width: 690px;
+}
+.show {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-ink);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 8px 6px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: #fff;
+  font: 700 0.92rem/1.2 var(--font-sans);
+  color: var(--color-navy);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--color-alt);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-mut);
+}
+.chip[aria-pressed="true"] {
+  border-color: var(--color-amber);
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+.chip[aria-pressed="true"] .count {
+  background: rgb(255 255 255 / 0.6);
+  color: var(--color-on-accent);
+}
+.chip:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) {
+  .chip:not([aria-pressed="true"]):hover {
+    border-color: var(--color-amber-ink);
+  }
+}
+.live {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-mut);
+}
+.grid {
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.grid > li {
+  display: flex;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+/* phones: the strips are decoration, so the shelf drops them */
+@media (max-width: 639px) {
+  .grid .band {
+    display: none;
+  }
+}
+/* a resting mouse on a type previews it (the other cards fade, nothing moves); a click filters */
+@media (hover: hover) {
+  .shelf[data-filter="all"]:has(.chip[data-k="how-to"]:hover) .grid > li:not([data-cat="how-to"]) .card,
+  .shelf[data-filter="all"]:has(.chip[data-k="estimating"]:hover) .grid > li:not([data-cat="estimating"]) .card,
+  .shelf[data-filter="all"]:has(.chip[data-k="buying-guide"]:hover) .grid > li:not([data-cat="buying-guide"]) .card,
+  .shelf[data-filter="all"]:has(.chip[data-k="reference"]:hover) .grid > li:not([data-cat="reference"]) .card {
+    opacity: 0.45;
+  }
+}
+.shelf[data-filter="how-to"] .grid > li:not([data-cat="how-to"]),
+.shelf[data-filter="estimating"] .grid > li:not([data-cat="estimating"]),
+.shelf[data-filter="buying-guide"] .grid > li:not([data-cat="buying-guide"]),
+.shelf[data-filter="reference"] .grid > li:not([data-cat="reference"]) {
+  display: none;
+}

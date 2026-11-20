@@ -1,0 +1,164 @@
+/* Handoff table (HandoffTable.tsx): navy header, the document as row header, owner pills. Rows are cards below 720px. */
+.head {
+  display: grid;
+  column-gap: 32px;
+  align-items: end;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-mut);
+}
+.sep {
+  margin-inline: 4px;
+}
+@media (width >= 1024px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .legend {
+    margin-bottom: clamp(28px, 4vw, 44px);
+  }
+}
+.pill {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  min-width: 46px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-navy);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+.pill[data-ju] {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+}
+
+.frame {
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--r-card, 20px);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.96rem;
+}
+.table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.table thead th {
+  padding: 12px 18px;
+  background: var(--color-navy);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  color: #fff;
+}
+.table tbody th,
+.table td {
+  padding: 14px 18px;
+  border-top: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.table tbody th {
+  width: 22%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.table td {
+  color: var(--color-ink);
+}
+@media (hover: hover) {
+  .table tbody tr:hover {
+    background: color-mix(in srgb, var(--color-amber) 6%, transparent);
+  }
+}
+.clauses {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.clauses li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+@media (width < 720px) {
+  .table,
+  .table tbody,
+  .table tr,
+  .table tbody th,
+  .table td {
+    display: block;
+  }
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .table tbody tr {
+    padding: 16px 18px;
+    border-top: 1px solid var(--color-line);
+  }
+  .table tbody tr:first-child {
+    border-top: 0;
+  }
+  .table tbody th,
+  .table td {
+    width: auto;
+    padding: 0;
+    border: 0;
+  }
+  .table tbody th {
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+  }
+  .table td + td {
+    margin-top: 12px;
+  }
+  .table td::before {
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-mut);
+  }
+}
+@media (forced-colors: active) {
+  .pill {
+    border: 1px solid CanvasText;
+  }
+}

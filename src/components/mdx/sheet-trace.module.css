@@ -1,0 +1,292 @@
+/*
+ * Formula trace (SheetTrace) inside the article: the global .sheet frame (Excel chrome), a formula bar, the readout
+ * and the column table. Precedent colors are the drawings' text-safe shades, each 4.5:1 or better on white:
+ * cold, hot, vent, storm in order of first use.
+ */
+.trace {
+  margin-block: 1.8em;
+  /* clip, not hidden: hidden would make the frame a scroll container and stop the phone formula bar from sticking */
+  overflow: clip;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.trace [data-ref="0"] {
+  --rc: var(--color-cold);
+}
+.trace [data-ref="1"] {
+  --rc: #b8362a;
+}
+.trace [data-ref="2"] {
+  --rc: #1f7a4d;
+}
+.trace [data-ref="3"] {
+  --rc: #0b6f7c;
+}
+
+/* ---------- formula bar and readout ---------- */
+.top {
+  padding: 12px 14px 10px;
+  background: #fff;
+}
+/* phones and tablets: the bar stays in view under the header and the guide bar while the cards scroll */
+@media (max-width: 1023px) {
+  .top {
+    position: sticky;
+    top: calc(var(--header-h) + 56px);
+    z-index: 2;
+    box-shadow: 0 8px 14px -12px rgb(21 18 58 / 0.35);
+  }
+}
+.fbar {
+  display: grid;
+  grid-template-columns: 64px 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 10px;
+}
+.name,
+.formula {
+  font-family: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+  color: var(--color-navy);
+}
+.name {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  background: #f5f7fb;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.fx {
+  font-style: italic;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-mut);
+}
+/* every formula sits in one grid cell; only the picked one is visible, so the bar keeps one height */
+.formula {
+  display: grid;
+  min-height: 34px;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #c8d0e0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.formula > span,
+.readout > span {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+.formula > span[data-on],
+.readout > span[data-on] {
+  visibility: visible;
+}
+.formula b {
+  font-weight: 700;
+  color: var(--rc);
+}
+.none {
+  font-family: var(--font-sans);
+  font-style: italic;
+  color: var(--color-mut);
+}
+.copy {
+  white-space: nowrap;
+}
+.copy:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+.readout {
+  display: grid;
+  margin: 0;
+  padding: 0 14px 12px;
+  border-bottom: 1px solid #c8d0e0;
+  background: #fff;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+}
+/* phones: one compact row (the copy button keeps its name, shown as an icon) */
+@media (max-width: 639px) {
+  .fbar {
+    grid-template-columns: 50px 12px minmax(0, 1fr) 40px;
+    gap: 8px;
+  }
+  .copy {
+    width: 40px;
+    padding-inline: 0;
+  }
+  .copyText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .readout {
+    padding-top: 2px;
+  }
+}
+
+/* ---------- the column table ---------- */
+/* the frame carries the global .sheet class: its table min-width and no-wrap cells are reset here */
+.table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.table th,
+.table td {
+  padding: 9px 12px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  border: 0;
+  border-bottom: 1px solid #e1e6f0;
+}
+.table thead th {
+  background: #f5f7fb;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+}
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.table tr[data-on] {
+  background: var(--color-tint);
+}
+.table tr[data-on] > td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-amber);
+}
+.table tr[data-ref] {
+  outline: 2px solid var(--rc);
+  outline-offset: -2px;
+}
+@media (hover: hover) {
+  .table tbody tr:not([data-on]):hover {
+    background: #fbfcfe;
+  }
+}
+.pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+.pick:focus-visible {
+  outline-offset: 4px;
+}
+/* the letter chip for an outlined row (its slot is always there, so the text never shifts) */
+.chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.05em;
+  border-radius: 6px;
+  background: var(--rc, transparent);
+  font: 800 0.72rem/1 var(--font-sans);
+  color: #fff;
+  visibility: hidden;
+}
+tr[data-ref] .chip {
+  visibility: visible;
+}
+.table td :global(code) {
+  font-size: 0.82em;
+}
+
+/* phones: each column becomes a card, the other cells under their header labels */
+@media (max-width: 639px) {
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+  }
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .table tbody {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+  }
+  .table tbody tr {
+    padding: 12px 14px;
+    border: 1px solid #e1e6f0;
+    border-radius: 12px;
+  }
+  .table td {
+    padding: 0;
+    border: 0;
+  }
+  .table tbody tr:last-child td {
+    border: 0;
+  }
+  .table tr[data-on] > td:first-child {
+    box-shadow: none;
+  }
+  .table tr[data-on] {
+    box-shadow: inset 4px 0 0 var(--color-amber);
+  }
+  .table td + td {
+    margin-top: 8px;
+  }
+  .table td + td::before {
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-mut);
+  }
+}
+
+@media (forced-colors: active) {
+  .table tr[data-on] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .table tr[data-ref] {
+    outline: 2px dashed CanvasText;
+  }
+  .chip {
+    forced-color-adjust: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .table tbody tr {
+    transition: none;
+  }
+}

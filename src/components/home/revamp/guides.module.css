@@ -1,0 +1,167 @@
+/* Guides strip: three soft cards, each one topped with a small drafted plumbing detail. */
+
+/* Head on the left, "All plumbing estimating guides" on the right; the link wraps under the head when it runs out of room. */
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 32px;
+  /* same space above the cards as every other section head */
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.headRow :global(.sec-head) {
+  margin-bottom: 0;
+}
+/* From 1024 up the head gives up some width (it still grows to its 780px cap) so the link stays on the right. */
+@media (min-width: 1024px) {
+  .headRow :global(.sec-head) {
+    flex: 1 1 560px;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+.grid > li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.band {
+  overflow: hidden;
+  height: 140px;
+  border-bottom: 1px solid var(--color-line);
+  /* the card is 20px round with a 1px border */
+  border-radius: 19px 19px 0 0;
+  background: var(--color-alt);
+}
+/* Three across: the band shrinks with the card so the middle of the drawing (fixtures, fittings) stays in view. */
+@media (min-width: 900px) {
+  .band {
+    height: clamp(104px, 10.4vw, 150px);
+  }
+}
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Water moves along the main while the card is hovered or focused (static under reduced motion). */
+.flow {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.6;
+  stroke-dasharray: 2 13;
+  stroke-linecap: round;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.card:hover .flow,
+.card:focus-within .flow {
+  opacity: 0.95;
+  animation: flow 0.9s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -15;
+  }
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 26px 24px;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-card);
+  line-height: 1.3;
+}
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+/* The whole card is the link; the focus ring traces the card instead of the title text. */
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+}
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 3px solid var(--color-navy-2);
+  outline-offset: 3px;
+}
+.blurb {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--color-mut);
+}
+/* Same footer as the price cards: the label on the left, a 34px arrow circle on the right that turns amber. */
+.go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.go svg {
+  flex: none;
+  box-sizing: content-box;
+  padding: 9px;
+  border-radius: 50%;
+  background: var(--color-alt);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.card:hover .go svg,
+.card:focus-within .go svg {
+  background: var(--color-amber);
+  color: var(--color-on-accent);
+  transform: translateX(3px);
+}
+.card:hover .title {
+  text-decoration: underline;
+  text-decoration-color: var(--color-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 639px) {
+  .body {
+    padding: 20px 20px 22px;
+  }
+}
