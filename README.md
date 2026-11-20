@@ -34,14 +34,15 @@ Copy `.env.example` to `.env.local`. Nothing is required to run the site locally
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Canonical origin without a trailing slash. Drives canonicals, sitemap, Open Graph, JSON-LD and `llms.txt`. A Vercel Production build fails while it is blank, not https, or a placeholder (localhost, example.com). Leave it blank locally and on previews. |
-| `NEXT_PUBLIC_SITE_ENV` | Set to `production` on the live domain only. Any other value serves the whole site `noindex` (header, meta and `robots.txt`). `VERCEL_ENV=production` also counts. |
+| `NEXT_PUBLIC_SITE_ENV` | Set to `production` on the live domain only. Any other value serves the whole site `noindex` (header, meta and `robots.txt`), including a Vercel Production deploy without it. |
 | `RESEND_API_KEY`, `LEAD_FROM_EMAIL`, `LEAD_TO_EMAIL` | Email delivery of quote requests through Resend. The sender must be on a domain verified in Resend. `LEAD_TO_EMAIL` defaults to `info@juestimating.com`. |
 | `LEAD_WEBHOOK_URL` | Optional JSON webhook (CRM, Zapier, Make). Email, webhook or both. |
 | `NEXT_PUBLIC_GA_ID` | Optional GA4 ID. If you switch it on, add a consent control and update the cookie policy first. |
 | `NEXT_PUBLIC_BOOKING_URL` | Booking page for the "Book a 30-minute consultation" button. |
 | `CSP_REPORT_ONLY` | Set to `1` to send the Content-Security-Policy as Report-Only while testing a new tag or embed. Production builds enforce the policy by default; `next dev` sends none. Read at build time, so redeploy after changing it. |
 
-With no delivery variable set, a Vercel Production build refuses to run. Any other production-mode server (a Vercel Preview,
+With no delivery variable set, the indexable launch build (`NEXT_PUBLIC_SITE_ENV=production` on Vercel Production) refuses to
+run. Before the launch it only warns, and every production-mode server (a noindex Vercel Production deploy, a Preview,
 `next start`) shows visitors a "call or email us" message instead of silently dropping a lead. Set both email and a webhook if you
 can: a lead counts as delivered when either one accepts it, so one provider outage then drops nothing.
 

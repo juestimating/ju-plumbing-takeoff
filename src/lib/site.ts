@@ -17,9 +17,8 @@ export const SITE = {
   parentUrl: "https://www.juestimating.com",
   tagline: "Plumbing takeoff and estimating services",
   url: rawUrl.replace(/\/+$/, ""),
-  /** Only the live domain is indexable. Mirrors next.config.ts. */
-  isProduction:
-    process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_SITE_ENV === "production",
+  /** Only the live domain (NEXT_PUBLIC_SITE_ENV=production) is indexable. Mirrors next.config.ts. */
+  isProduction: process.env.NEXT_PUBLIC_SITE_ENV === "production",
   locale: "en_US",
   phone: { display: "(703) 721-8864", tel: "+17037218864" },
   email: "info@juestimating.com",

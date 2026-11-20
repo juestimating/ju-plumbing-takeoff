@@ -1,13 +1,14 @@
 import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
 
-// Production indexability is opt-in: only the live domain sets NEXT_PUBLIC_SITE_ENV=production
-// (or Vercel's own production target). Every preview/local build is served noindex.
-const isProduction =
-  process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_SITE_ENV === "production";
+// Production indexability is opt-in: only the live domain sets NEXT_PUBLIC_SITE_ENV=production. Every other build
+// (local work, previews, a Vercel production deploy before the domain and lead delivery are ready) is served noindex.
+const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 
-// Fail the Vercel Production build instead of shipping a placeholder canonical host or a form that cannot send.
-// VERCEL_ENV is "production" only for the Production target, so local and preview builds are not affected.
+// Fail the Vercel Production build instead of shipping a placeholder canonical host, and fail the indexable launch build
+// (NEXT_PUBLIC_SITE_ENV=production) instead of shipping a form that cannot send. Before the launch, a missing lead channel
+// is only a warning: the form then tells visitors to call or email. VERCEL_ENV is "production" only for the Production
+// target, so local and preview builds are not affected.
 if (process.env.VERCEL_ENV === "production") {
   const problems: string[] = [];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? "";
@@ -19,7 +20,9 @@ if (process.env.VERCEL_ENV === "production") {
   }
   const email = Boolean(process.env.RESEND_API_KEY?.trim() && process.env.LEAD_FROM_EMAIL?.trim());
   if (!email && !process.env.LEAD_WEBHOOK_URL?.trim()) {
-    problems.push("no lead delivery channel: set RESEND_API_KEY and LEAD_FROM_EMAIL, and/or LEAD_WEBHOOK_URL");
+    const lead = "no lead delivery channel: set RESEND_API_KEY and LEAD_FROM_EMAIL, and/or LEAD_WEBHOOK_URL";
+    if (isProduction) problems.push(lead);
+    else console.warn(`Warning: ${lead}. Until one is set, the quote form asks visitors to call or email.`);
   }
   if (problems.length) throw new Error(`Production build refused: ${problems.join("; ")}.`);
 }
